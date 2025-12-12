@@ -1,0 +1,973 @@
+{
+  "nodes": [
+    {
+      "id": "650e09a0-e833-4fe7-9ca3-0e52b8d74f20",
+      "type": "scene",
+      "position": {
+        "x": 400,
+        "y": 50
+      },
+      "data": {
+        "label": "禁闭舱段",
+        "content": "禁闭舱段",
+        "type": "scene"
+      }
+    },
+    {
+      "id": "eba8b70f-0d1a-4d34-9b93-3f43a4f34d6e",
+      "type": "setter",
+      "position": {
+        "x": 400,
+        "y": 200
+      },
+      "data": {
+        "label": "Init Vars",
+        "variable": "reputation",
+        "value": "50",
+        "tags": [
+          "start"
+        ],
+        "type": "setter"
+      }
+    },
+    {
+      "id": "bcdcf8dd-cd33-497e-b97a-7c2166e5878c",
+      "type": "narration",
+      "position": {
+        "x": 400,
+        "y": 350
+      },
+      "data": {
+        "content": "你来到禁闭舱段，这里比想象中安静。奇物收容舱在远处发出微弱的蓝光",
+        "type": "narration"
+      }
+    },
+    {
+      "id": "af06641a-0fa8-45d2-9e66-e6cd9640363c",
+      "type": "dialogue",
+      "position": {
+        "x": 400,
+        "y": 500
+      },
+      "data": {
+        "speaker": "谐乐小喵",
+        "content": "你好！欢迎回来喵。",
+        "type": "dialogue"
+      }
+    },
+    {
+      "id": "18510fd7-1f61-4109-81a7-4f03bde17ab6",
+      "type": "narration",
+      "position": {
+        "x": 400,
+        "y": 650
+      },
+      "data": {
+        "content": "还没来得及搭话，你便注意到艾丝妲身旁的桌上蹲着只你此前从未见过的造物。而它的模样，无疑让你想起了某位故人……",
+        "type": "narration"
+      }
+    },
+    {
+      "id": "a26e62a9-f64f-432b-af63-e3a136f40888",
+      "type": "dialogue",
+      "position": {
+        "x": 400,
+        "y": 800
+      },
+      "data": {
+        "speaker": "艾丝妲",
+        "content": "好久不见呀，开拓者。欢迎回到「黑塔」空间站！<br/>嘿嘿，我专程约在禁闭舱段见面，想必…你应该能猜到找你有什么事了吧？",
+        "type": "dialogue"
+      }
+    },
+    {
+      "id": "6c838e62-4b54-4c9c-9e42-43533ebe8f39",
+      "type": "choice",
+      "position": {
+        "x": 400,
+        "y": 950
+      },
+      "data": {
+        "label": "猜测艾丝妲的意图",
+        "choices": [
+          {
+            "id": "c1",
+            "label": "我知道了，你想找我借钱。",
+            "action": "choice=1"
+          },
+          {
+            "id": "c2",
+            "label": "…不会要抓我去做实验吧！",
+            "action": "choice=2"
+          },
+          {
+            "id": "c3",
+            "label": "莫非…和造物们有关系？",
+            "action": "choice=3"
+          }
+        ],
+        "type": "choice"
+      }
+    },
+    {
+      "id": "3a936311-8bf7-4c02-bab1-0bb8d98ddebc",
+      "type": "condition",
+      "position": {
+        "x": 100,
+        "y": 1100
+      },
+      "data": {
+        "condition": "choice == 1",
+        "type": "condition"
+      }
+    },
+    {
+      "id": "9070c9ce-ee80-495b-a91a-48ea2935a677",
+      "type": "dialogue",
+      "position": {
+        "x": 100,
+        "y": 1250
+      },
+      "data": {
+        "speaker": "艾丝妲",
+        "content": "啊，不会不会。虽说管理黑塔女士带回来的奇物，确实给空间站造成了不小的预算压力，但放心，资金方面的窟窿，我自己就能填上。<br/>能用信用点解决的问题，当然不算是问题。",
+        "type": "dialogue"
+      }
+    },
+    {
+      "id": "3b968405-3211-493f-8518-938a83261f4b",
+      "type": "setter",
+      "position": {
+        "x": 100,
+        "y": 1400
+      },
+      "data": {
+        "variable": "mentioned_credit",
+        "value": "true",
+        "type": "setter"
+      }
+    },
+    {
+      "id": "05be3f3c-1d7e-4f3c-96a7-4a6ba737becc",
+      "type": "condition",
+      "position": {
+        "x": 400,
+        "y": 1550
+      },
+      "data": {
+        "condition": "choice == 2",
+        "type": "condition"
+      }
+    },
+    {
+      "id": "e7e05817-32d5-40e2-be50-cc3c77255380",
+      "type": "dialogue",
+      "position": {
+        "x": 400,
+        "y": 1700
+      },
+      "data": {
+        "speaker": "艾丝妲",
+        "content": "嗯？听起来像是黑塔女士会做的事，我提出的委托…至多就是陪佩佩玩会吧。<br/>开玩笑的。佩佩已经是很成熟的科员了，这种小事不需要麻烦你。",
+        "type": "dialogue"
+      }
+    },
+    {
+      "id": "685451e4-9a2a-438e-9b31-fdf537190ec6",
+      "type": "setter",
+      "position": {
+        "x": 400,
+        "y": 1850
+      },
+      "data": {
+        "variable": "mentioned_experiment",
+        "value": "true",
+        "type": "setter"
+      }
+    },
+    {
+      "id": "74f7bd0d-ea4c-4d8e-9b9c-a15af64a7c60",
+      "type": "condition",
+      "position": {
+        "x": 700,
+        "y": 2000
+      },
+      "data": {
+        "condition": "choice == 3",
+        "type": "condition"
+      }
+    },
+    {
+      "id": "22c9bdec-d847-48a8-b153-f2639fc0c7b3",
+      "type": "dialogue",
+      "position": {
+        "x": 700,
+        "y": 2150
+      },
+      "data": {
+        "speaker": "谐乐小喵",
+        "content": "喵。都说不是「训练」，是大家共同举办的「赛跑」，是自发的比赛！<br/>也不需要助手，只用在观众席为我们应援，呐喊助威就够，我们自己会跑快快的喵。",
+        "type": "dialogue"
+      }
+    },
+    {
+      "id": "b91d542e-aa43-4cd4-800d-0eb086de4305",
+      "type": "setter",
+      "position": {
+        "x": 700,
+        "y": 2300
+      },
+      "data": {
+        "variable": "mentioned_creature",
+        "value": "true",
+        "type": "setter"
+      }
+    },
+    {
+      "id": "26ec32b9-23e9-402a-9c37-a72f0f93d555",
+      "type": "scene",
+      "position": {
+        "x": 400,
+        "y": 2450
+      },
+      "data": {
+        "label": "选择后的对话",
+        "content": "...",
+        "type": "scene"
+      }
+    },
+    {
+      "id": "03000925-41ab-4b58-b0f8-893fbbdc234e",
+      "type": "dialogue",
+      "position": {
+        "x": 400,
+        "y": 2600
+      },
+      "data": {
+        "speaker": "艾丝妲",
+        "content": "空间站的造物们自发组织了一场「无限赛跑」，就在明天举行。<br/>但最近收容舱段有些不稳定，我担心会影响到比赛...<br/>你能帮我检查一下几个关键区域的收容装置吗？",
+        "type": "dialogue"
+      }
+    },
+    {
+      "id": "941312bb-3dcd-4c62-9a63-a1f22856c2b4",
+      "type": "choice",
+      "position": {
+        "x": 400,
+        "y": 2750
+      },
+      "data": {
+        "label": "接受任务",
+        "choices": [
+          {
+            "id": "q1",
+            "label": "乐意效劳！",
+            "action": "quest_started=true"
+          },
+          {
+            "id": "q2",
+            "label": "有什么奖励吗？",
+            "action": "quest_started=true"
+          },
+          {
+            "id": "q3",
+            "label": "让我先了解下情况...",
+            "action": ""
+          }
+        ],
+        "type": "choice"
+      }
+    },
+    {
+      "id": "956c2573-8396-4e9b-a2b3-6fe546f8de25",
+      "type": "reward",
+      "position": {
+        "x": 200,
+        "y": 2900
+      },
+      "data": {
+        "rewardType": "Reputation",
+        "amount": "10",
+        "type": "reward"
+      }
+    },
+    {
+      "id": "03fdf6fe-079b-4865-8a30-02910678af46",
+      "type": "reward",
+      "position": {
+        "x": 400,
+        "y": 3050
+      },
+      "data": {
+        "rewardType": "Coins",
+        "amount": "1000",
+        "type": "reward"
+      }
+    },
+    {
+      "id": "b6ee7e46-957d-44b5-818d-29b4e3569787",
+      "type": "branch",
+      "position": {
+        "x": 600,
+        "y": 3200
+      },
+      "data": {
+        "label": "了解更多",
+        "content": "去和造物们聊聊",
+        "type": "branch"
+      }
+    },
+    {
+      "id": "82c047c9-1e24-4ca4-b572-3d3f93c4f254",
+      "type": "dialogue",
+      "position": {
+        "x": 600,
+        "y": 3350
+      },
+      "data": {
+        "speaker": "艾丝妲",
+        "content": "好吧，你可以先去和参赛的造物们聊聊。",
+        "type": "dialogue"
+      }
+    },
+    {
+      "id": "effe98bc-50d5-459d-a5f7-3b3a6fad5c50",
+      "type": "dialogue",
+      "position": {
+        "x": 600,
+        "y": 3500
+      },
+      "data": {
+        "speaker": "谐乐小喵",
+        "content": "喵！去主控舱段找「计时球」大人吧，他是裁判喵！",
+        "type": "dialogue"
+      }
+    },
+    {
+      "id": "f02f4575-d395-4088-a26e-6058f767f8c2",
+      "type": "task",
+      "position": {
+        "x": 600,
+        "y": 3650
+      },
+      "data": {
+        "label": "了解赛跑详情",
+        "content": "去主控舱段找计时球",
+        "taskStatus": "pending",
+        "type": "task"
+      }
+    },
+    {
+      "id": "674f6f9f-1b55-4517-8b7f-e57336e83639",
+      "type": "task",
+      "position": {
+        "x": 400,
+        "y": 3800
+      },
+      "data": {
+        "label": "检查收容装置",
+        "content": "检查3个区域的收容装置",
+        "taskStatus": "pending",
+        "type": "task"
+      }
+    },
+    {
+      "id": "2526238d-ab55-42e8-8e72-a79cb17752d3",
+      "type": "dialogue",
+      "position": {
+        "x": 400,
+        "y": 3950
+      },
+      "data": {
+        "speaker": "艾丝妲",
+        "content": "太好了！这是检查清单...",
+        "type": "dialogue"
+      }
+    },
+    {
+      "id": "8af06326-4802-4c47-9975-c3035c4837d9",
+      "type": "choice",
+      "position": {
+        "x": 400,
+        "y": 4100
+      },
+      "data": {
+        "label": "下一步行动",
+        "choices": [
+          {
+            "id": "a1",
+            "label": "立即开始检查 (收容舱段)",
+            "action": ""
+          },
+          {
+            "id": "a2",
+            "label": "去主控舱段看看",
+            "action": ""
+          },
+          {
+            "id": "a3",
+            "label": "找阿兰帮忙 (防卫科)",
+            "action": ""
+          }
+        ],
+        "type": "choice"
+      }
+    },
+    {
+      "id": "80e5f241-afa3-4328-bf77-1a7baaa327fa",
+      "type": "scene",
+      "position": {
+        "x": 100,
+        "y": 4250
+      },
+      "data": {
+        "label": "收容舱段B区",
+        "content": "B区的收容舱室排列整齐，但你能感觉到某种能量的波动",
+        "type": "scene"
+      }
+    },
+    {
+      "id": "32b96a0d-1b74-4e21-b7e4-936ee17fb95e",
+      "type": "narration",
+      "position": {
+        "x": 100,
+        "y": 4400
+      },
+      "data": {
+        "content": "检查收容装置-02：[状态:警告-能量泄露]",
+        "type": "narration"
+      }
+    },
+    {
+      "id": "9e59e370-41d1-41b6-becb-9ff06526a0bb",
+      "type": "choice",
+      "position": {
+        "x": 100,
+        "y": 4550
+      },
+      "data": {
+        "label": "处理异常",
+        "choices": [
+          {
+            "id": "f1",
+            "label": "修复能量泄露",
+            "action": "fixed=true"
+          },
+          {
+            "id": "f2",
+            "label": "标记异常并继续",
+            "action": "found_anomaly=true"
+          }
+        ],
+        "type": "choice"
+      }
+    },
+    {
+      "id": "5288621f-0c28-45b9-91c5-384ae5bd3fc0",
+      "type": "reward",
+      "position": {
+        "x": 0,
+        "y": 4700
+      },
+      "data": {
+        "rewardType": "Coins",
+        "amount": "500",
+        "type": "reward"
+      }
+    },
+    {
+      "id": "571368a3-59dc-4aae-aa3a-f49e93eb15af",
+      "type": "dialogue",
+      "position": {
+        "x": 0,
+        "y": 4850
+      },
+      "data": {
+        "speaker": "系统",
+        "content": "修复成功！",
+        "type": "dialogue"
+      }
+    },
+    {
+      "id": "fe92e791-989e-47c1-87e9-e74621ce1053",
+      "type": "narration",
+      "position": {
+        "x": 200,
+        "y": 5000
+      },
+      "data": {
+        "content": "已标记异常。",
+        "type": "narration"
+      }
+    },
+    {
+      "id": "55fe0d65-2973-43ef-ad7f-d4524d030d91",
+      "type": "scene",
+      "position": {
+        "x": 400,
+        "y": 5150
+      },
+      "data": {
+        "label": "主控舱段",
+        "content": "主控舱段一如既往地繁忙",
+        "type": "scene"
+      }
+    },
+    {
+      "id": "164aa081-1ac4-40d7-9105-76b6830ecd08",
+      "type": "dialogue",
+      "position": {
+        "x": 400,
+        "y": 5300
+      },
+      "data": {
+        "speaker": "计时球",
+        "content": "哔哔——检测到非参赛人员。请说明来意。",
+        "type": "dialogue"
+      }
+    },
+    {
+      "id": "84af25fe-73df-41d5-a668-01673f61bda7",
+      "type": "choice",
+      "position": {
+        "x": 400,
+        "y": 5450
+      },
+      "data": {
+        "choices": [
+          {
+            "id": "t1",
+            "label": "我是来帮忙的",
+            "action": ""
+          },
+          {
+            "id": "t2",
+            "label": "想了解比赛规则",
+            "action": "race_rules=true"
+          }
+        ],
+        "type": "choice"
+      }
+    },
+    {
+      "id": "ee55eb80-50c4-4e5d-848f-4644e69d86e4",
+      "type": "dialogue",
+      "position": {
+        "x": 500,
+        "y": 5600
+      },
+      "data": {
+        "speaker": "计时球",
+        "content": "规则很简单...但今年的路线经过几个不稳定的奇物收容区，存在未知风险。",
+        "type": "dialogue"
+      }
+    },
+    {
+      "id": "5d5ad0bf-1695-43cc-8765-1e4119026833",
+      "type": "scene",
+      "position": {
+        "x": 700,
+        "y": 5750
+      },
+      "data": {
+        "label": "防卫科办公室",
+        "content": "阿兰正在忙碌",
+        "type": "scene"
+      }
+    },
+    {
+      "id": "d949a4c7-1e5c-442e-9516-e260a59aaec5",
+      "type": "dialogue",
+      "position": {
+        "x": 700,
+        "y": 5900
+      },
+      "data": {
+        "speaker": "阿兰",
+        "content": "开拓者？你怎么来这里了...站长又给你安排工作了吗？",
+        "type": "dialogue"
+      }
+    },
+    {
+      "id": "41e09ed5-544f-40af-bbb0-01b8c970e220",
+      "type": "choice",
+      "position": {
+        "x": 700,
+        "y": 6050
+      },
+      "data": {
+        "choices": [
+          {
+            "id": "ar1",
+            "label": "是的，检查收容装置",
+            "action": ""
+          },
+          {
+            "id": "ar2",
+            "label": "来看看你",
+            "action": ""
+          }
+        ],
+        "type": "choice"
+      }
+    },
+    {
+      "id": "f3387870-c76e-443f-a4df-ed8d06c5246d",
+      "type": "dialogue",
+      "position": {
+        "x": 600,
+        "y": 6200
+      },
+      "data": {
+        "speaker": "阿兰",
+        "content": "收容装置？让我看看清单...A区和C区我已经检查过了。",
+        "type": "dialogue"
+      }
+    },
+    {
+      "id": "0195537a-7270-423a-93e6-d6d543846d1e",
+      "type": "task",
+      "position": {
+        "x": 600,
+        "y": 6350
+      },
+      "data": {
+        "label": "照看佩佩",
+        "content": "比赛期间照看佩佩",
+        "taskStatus": "pending",
+        "type": "task"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-650e09a0-e833-4fe7-9ca3-0e52b8d74f20-eba8b70f-0d1a-4d34-9b93-3f43a4f34d6e-b96f2149-b05e-48bc-b8a5-c39ca9021f86",
+      "source": "650e09a0-e833-4fe7-9ca3-0e52b8d74f20",
+      "target": "eba8b70f-0d1a-4d34-9b93-3f43a4f34d6e",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-eba8b70f-0d1a-4d34-9b93-3f43a4f34d6e-bcdcf8dd-cd33-497e-b97a-7c2166e5878c-3fb2abfe-accb-49aa-8e09-2fd846e4506e",
+      "source": "eba8b70f-0d1a-4d34-9b93-3f43a4f34d6e",
+      "target": "bcdcf8dd-cd33-497e-b97a-7c2166e5878c",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-bcdcf8dd-cd33-497e-b97a-7c2166e5878c-af06641a-0fa8-45d2-9e66-e6cd9640363c-5af11db1-bbcf-4df9-a7dd-1cfa20c6c0c0",
+      "source": "bcdcf8dd-cd33-497e-b97a-7c2166e5878c",
+      "target": "af06641a-0fa8-45d2-9e66-e6cd9640363c",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-af06641a-0fa8-45d2-9e66-e6cd9640363c-18510fd7-1f61-4109-81a7-4f03bde17ab6-48afe0eb-f96d-420a-9b25-450743bc7e47",
+      "source": "af06641a-0fa8-45d2-9e66-e6cd9640363c",
+      "target": "18510fd7-1f61-4109-81a7-4f03bde17ab6",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-18510fd7-1f61-4109-81a7-4f03bde17ab6-a26e62a9-f64f-432b-af63-e3a136f40888-0230a1a5-d23c-4333-9994-9c7a0172cfad",
+      "source": "18510fd7-1f61-4109-81a7-4f03bde17ab6",
+      "target": "a26e62a9-f64f-432b-af63-e3a136f40888",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-a26e62a9-f64f-432b-af63-e3a136f40888-6c838e62-4b54-4c9c-9e42-43533ebe8f39-49bfefb4-887b-46ee-b7f2-a26e3909378e",
+      "source": "a26e62a9-f64f-432b-af63-e3a136f40888",
+      "target": "6c838e62-4b54-4c9c-9e42-43533ebe8f39",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-6c838e62-4b54-4c9c-9e42-43533ebe8f39-3a936311-8bf7-4c02-bab1-0bb8d98ddebc-ce7d4e29-3f45-4d7f-bede-ecfac04fd107",
+      "source": "6c838e62-4b54-4c9c-9e42-43533ebe8f39",
+      "target": "3a936311-8bf7-4c02-bab1-0bb8d98ddebc",
+      "sourceHandle": "c1",
+      "label": "1"
+    },
+    {
+      "id": "e-3a936311-8bf7-4c02-bab1-0bb8d98ddebc-9070c9ce-ee80-495b-a91a-48ea2935a677-f1bb3c57-ee47-4ce2-9343-1cd063f87d31",
+      "source": "3a936311-8bf7-4c02-bab1-0bb8d98ddebc",
+      "target": "9070c9ce-ee80-495b-a91a-48ea2935a677",
+      "sourceHandle": "true",
+      "label": null
+    },
+    {
+      "id": "e-9070c9ce-ee80-495b-a91a-48ea2935a677-3b968405-3211-493f-8518-938a83261f4b-02f68637-579e-4111-9ad1-a4ee95825bce",
+      "source": "9070c9ce-ee80-495b-a91a-48ea2935a677",
+      "target": "3b968405-3211-493f-8518-938a83261f4b",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-6c838e62-4b54-4c9c-9e42-43533ebe8f39-05be3f3c-1d7e-4f3c-96a7-4a6ba737becc-ebc4d7e8-0595-4e0d-aef0-c52900cc8b8d",
+      "source": "6c838e62-4b54-4c9c-9e42-43533ebe8f39",
+      "target": "05be3f3c-1d7e-4f3c-96a7-4a6ba737becc",
+      "sourceHandle": "c2",
+      "label": "2"
+    },
+    {
+      "id": "e-05be3f3c-1d7e-4f3c-96a7-4a6ba737becc-e7e05817-32d5-40e2-be50-cc3c77255380-26ff1d84-b294-4590-9724-923377babae4",
+      "source": "05be3f3c-1d7e-4f3c-96a7-4a6ba737becc",
+      "target": "e7e05817-32d5-40e2-be50-cc3c77255380",
+      "sourceHandle": "true",
+      "label": null
+    },
+    {
+      "id": "e-e7e05817-32d5-40e2-be50-cc3c77255380-685451e4-9a2a-438e-9b31-fdf537190ec6-9de8d856-f995-4384-a626-8106d44f07ed",
+      "source": "e7e05817-32d5-40e2-be50-cc3c77255380",
+      "target": "685451e4-9a2a-438e-9b31-fdf537190ec6",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-6c838e62-4b54-4c9c-9e42-43533ebe8f39-74f7bd0d-ea4c-4d8e-9b9c-a15af64a7c60-3aba8ab4-bbcd-4852-bc2d-905ffe851e83",
+      "source": "6c838e62-4b54-4c9c-9e42-43533ebe8f39",
+      "target": "74f7bd0d-ea4c-4d8e-9b9c-a15af64a7c60",
+      "sourceHandle": "c3",
+      "label": "3"
+    },
+    {
+      "id": "e-74f7bd0d-ea4c-4d8e-9b9c-a15af64a7c60-22c9bdec-d847-48a8-b153-f2639fc0c7b3-6974a198-83e7-47be-842d-34c39ba9137a",
+      "source": "74f7bd0d-ea4c-4d8e-9b9c-a15af64a7c60",
+      "target": "22c9bdec-d847-48a8-b153-f2639fc0c7b3",
+      "sourceHandle": "true",
+      "label": null
+    },
+    {
+      "id": "e-22c9bdec-d847-48a8-b153-f2639fc0c7b3-b91d542e-aa43-4cd4-800d-0eb086de4305-e98521ce-1dc4-4369-b35b-a6204a5ceae1",
+      "source": "22c9bdec-d847-48a8-b153-f2639fc0c7b3",
+      "target": "b91d542e-aa43-4cd4-800d-0eb086de4305",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-3b968405-3211-493f-8518-938a83261f4b-26ec32b9-23e9-402a-9c37-a72f0f93d555-fb807164-ed34-4231-8fb9-7feba00c0083",
+      "source": "3b968405-3211-493f-8518-938a83261f4b",
+      "target": "26ec32b9-23e9-402a-9c37-a72f0f93d555",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-685451e4-9a2a-438e-9b31-fdf537190ec6-26ec32b9-23e9-402a-9c37-a72f0f93d555-0d3debad-238d-4dd6-b435-5bb0c84afc4e",
+      "source": "685451e4-9a2a-438e-9b31-fdf537190ec6",
+      "target": "26ec32b9-23e9-402a-9c37-a72f0f93d555",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-b91d542e-aa43-4cd4-800d-0eb086de4305-26ec32b9-23e9-402a-9c37-a72f0f93d555-20a10c19-2dcd-49b5-9448-b6ac3b705469",
+      "source": "b91d542e-aa43-4cd4-800d-0eb086de4305",
+      "target": "26ec32b9-23e9-402a-9c37-a72f0f93d555",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-26ec32b9-23e9-402a-9c37-a72f0f93d555-03000925-41ab-4b58-b0f8-893fbbdc234e-119a716e-cf24-4771-b09a-0fb2e23a3765",
+      "source": "26ec32b9-23e9-402a-9c37-a72f0f93d555",
+      "target": "03000925-41ab-4b58-b0f8-893fbbdc234e",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-03000925-41ab-4b58-b0f8-893fbbdc234e-941312bb-3dcd-4c62-9a63-a1f22856c2b4-a7fdca13-d9a4-468f-a3c5-a3a26233fb6e",
+      "source": "03000925-41ab-4b58-b0f8-893fbbdc234e",
+      "target": "941312bb-3dcd-4c62-9a63-a1f22856c2b4",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-941312bb-3dcd-4c62-9a63-a1f22856c2b4-956c2573-8396-4e9b-a2b3-6fe546f8de25-87a7070b-76a7-4b8a-9185-7cb29f2a3595",
+      "source": "941312bb-3dcd-4c62-9a63-a1f22856c2b4",
+      "target": "956c2573-8396-4e9b-a2b3-6fe546f8de25",
+      "sourceHandle": "q1",
+      "label": null
+    },
+    {
+      "id": "e-941312bb-3dcd-4c62-9a63-a1f22856c2b4-03fdf6fe-079b-4865-8a30-02910678af46-47ed1078-8bc3-4824-adaa-51bf58c50fa3",
+      "source": "941312bb-3dcd-4c62-9a63-a1f22856c2b4",
+      "target": "03fdf6fe-079b-4865-8a30-02910678af46",
+      "sourceHandle": "q2",
+      "label": null
+    },
+    {
+      "id": "e-941312bb-3dcd-4c62-9a63-a1f22856c2b4-b6ee7e46-957d-44b5-818d-29b4e3569787-94d7e995-3f44-4de2-8b43-ec1d213dde7c",
+      "source": "941312bb-3dcd-4c62-9a63-a1f22856c2b4",
+      "target": "b6ee7e46-957d-44b5-818d-29b4e3569787",
+      "sourceHandle": "q3",
+      "label": null
+    },
+    {
+      "id": "e-b6ee7e46-957d-44b5-818d-29b4e3569787-82c047c9-1e24-4ca4-b572-3d3f93c4f254-8cc1f00d-ef07-41ef-bbc6-48ea895073e7",
+      "source": "b6ee7e46-957d-44b5-818d-29b4e3569787",
+      "target": "82c047c9-1e24-4ca4-b572-3d3f93c4f254",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-82c047c9-1e24-4ca4-b572-3d3f93c4f254-effe98bc-50d5-459d-a5f7-3b3a6fad5c50-53ec4002-6902-4257-ac0d-35bf636e7e74",
+      "source": "82c047c9-1e24-4ca4-b572-3d3f93c4f254",
+      "target": "effe98bc-50d5-459d-a5f7-3b3a6fad5c50",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-effe98bc-50d5-459d-a5f7-3b3a6fad5c50-f02f4575-d395-4088-a26e-6058f767f8c2-5ea42b83-f366-4948-87a4-b153d7e6da0a",
+      "source": "effe98bc-50d5-459d-a5f7-3b3a6fad5c50",
+      "target": "f02f4575-d395-4088-a26e-6058f767f8c2",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-956c2573-8396-4e9b-a2b3-6fe546f8de25-674f6f9f-1b55-4517-8b7f-e57336e83639-6accd339-22d7-48ee-ad57-d713221bc411",
+      "source": "956c2573-8396-4e9b-a2b3-6fe546f8de25",
+      "target": "674f6f9f-1b55-4517-8b7f-e57336e83639",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-03fdf6fe-079b-4865-8a30-02910678af46-674f6f9f-1b55-4517-8b7f-e57336e83639-1ae9e493-4ee2-41db-b9fb-2dc3ccf2dc19",
+      "source": "03fdf6fe-079b-4865-8a30-02910678af46",
+      "target": "674f6f9f-1b55-4517-8b7f-e57336e83639",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-674f6f9f-1b55-4517-8b7f-e57336e83639-2526238d-ab55-42e8-8e72-a79cb17752d3-c92feb34-54ec-4229-8af0-9a40b15fac47",
+      "source": "674f6f9f-1b55-4517-8b7f-e57336e83639",
+      "target": "2526238d-ab55-42e8-8e72-a79cb17752d3",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-2526238d-ab55-42e8-8e72-a79cb17752d3-8af06326-4802-4c47-9975-c3035c4837d9-65a8a904-6c68-43b2-b3ec-6563a6ff59e0",
+      "source": "2526238d-ab55-42e8-8e72-a79cb17752d3",
+      "target": "8af06326-4802-4c47-9975-c3035c4837d9",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-8af06326-4802-4c47-9975-c3035c4837d9-80e5f241-afa3-4328-bf77-1a7baaa327fa-ede2f826-871a-46f8-911f-5ae8d295bfad",
+      "source": "8af06326-4802-4c47-9975-c3035c4837d9",
+      "target": "80e5f241-afa3-4328-bf77-1a7baaa327fa",
+      "sourceHandle": "a1",
+      "label": null
+    },
+    {
+      "id": "e-80e5f241-afa3-4328-bf77-1a7baaa327fa-32b96a0d-1b74-4e21-b7e4-936ee17fb95e-f633f323-a4ad-4f6b-a869-9b60711a4c0b",
+      "source": "80e5f241-afa3-4328-bf77-1a7baaa327fa",
+      "target": "32b96a0d-1b74-4e21-b7e4-936ee17fb95e",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-32b96a0d-1b74-4e21-b7e4-936ee17fb95e-9e59e370-41d1-41b6-becb-9ff06526a0bb-ad8f670f-e7f2-4c67-a23a-12196383030d",
+      "source": "32b96a0d-1b74-4e21-b7e4-936ee17fb95e",
+      "target": "9e59e370-41d1-41b6-becb-9ff06526a0bb",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-9e59e370-41d1-41b6-becb-9ff06526a0bb-5288621f-0c28-45b9-91c5-384ae5bd3fc0-5d6c213a-0c7f-4727-8ddb-45847b39a2dc",
+      "source": "9e59e370-41d1-41b6-becb-9ff06526a0bb",
+      "target": "5288621f-0c28-45b9-91c5-384ae5bd3fc0",
+      "sourceHandle": "f1",
+      "label": null
+    },
+    {
+      "id": "e-5288621f-0c28-45b9-91c5-384ae5bd3fc0-571368a3-59dc-4aae-aa3a-f49e93eb15af-f819ca1f-91cd-40ac-b834-ebc7989296e3",
+      "source": "5288621f-0c28-45b9-91c5-384ae5bd3fc0",
+      "target": "571368a3-59dc-4aae-aa3a-f49e93eb15af",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-9e59e370-41d1-41b6-becb-9ff06526a0bb-fe92e791-989e-47c1-87e9-e74621ce1053-e0d0a9fd-a4af-45a3-bac8-692a09840e61",
+      "source": "9e59e370-41d1-41b6-becb-9ff06526a0bb",
+      "target": "fe92e791-989e-47c1-87e9-e74621ce1053",
+      "sourceHandle": "f2",
+      "label": null
+    },
+    {
+      "id": "e-8af06326-4802-4c47-9975-c3035c4837d9-55fe0d65-2973-43ef-ad7f-d4524d030d91-fb3debba-13c1-4864-bb50-0922f64fec72",
+      "source": "8af06326-4802-4c47-9975-c3035c4837d9",
+      "target": "55fe0d65-2973-43ef-ad7f-d4524d030d91",
+      "sourceHandle": "a2",
+      "label": null
+    },
+    {
+      "id": "e-f02f4575-d395-4088-a26e-6058f767f8c2-55fe0d65-2973-43ef-ad7f-d4524d030d91-843e7490-ad06-433c-a733-b560ba0d28b8",
+      "source": "f02f4575-d395-4088-a26e-6058f767f8c2",
+      "target": "55fe0d65-2973-43ef-ad7f-d4524d030d91",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-55fe0d65-2973-43ef-ad7f-d4524d030d91-164aa081-1ac4-40d7-9105-76b6830ecd08-fe437a60-7917-4285-bdb8-9376372cd648",
+      "source": "55fe0d65-2973-43ef-ad7f-d4524d030d91",
+      "target": "164aa081-1ac4-40d7-9105-76b6830ecd08",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-164aa081-1ac4-40d7-9105-76b6830ecd08-84af25fe-73df-41d5-a668-01673f61bda7-dc348b03-5d4b-4027-8b68-8c645ae19597",
+      "source": "164aa081-1ac4-40d7-9105-76b6830ecd08",
+      "target": "84af25fe-73df-41d5-a668-01673f61bda7",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-84af25fe-73df-41d5-a668-01673f61bda7-ee55eb80-50c4-4e5d-848f-4644e69d86e4-97c50c4d-6877-4c7b-8f2f-c6ba95ed03d8",
+      "source": "84af25fe-73df-41d5-a668-01673f61bda7",
+      "target": "ee55eb80-50c4-4e5d-848f-4644e69d86e4",
+      "sourceHandle": "t2",
+      "label": null
+    },
+    {
+      "id": "e-8af06326-4802-4c47-9975-c3035c4837d9-5d5ad0bf-1695-43cc-8765-1e4119026833-d3d3ce09-e489-4aa9-8665-00a6de8b7d14",
+      "source": "8af06326-4802-4c47-9975-c3035c4837d9",
+      "target": "5d5ad0bf-1695-43cc-8765-1e4119026833",
+      "sourceHandle": "a3",
+      "label": null
+    },
+    {
+      "id": "e-5d5ad0bf-1695-43cc-8765-1e4119026833-d949a4c7-1e5c-442e-9516-e260a59aaec5-da1d84e7-ea1f-4ad1-ad60-ed86ff3c8fed",
+      "source": "5d5ad0bf-1695-43cc-8765-1e4119026833",
+      "target": "d949a4c7-1e5c-442e-9516-e260a59aaec5",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-d949a4c7-1e5c-442e-9516-e260a59aaec5-41e09ed5-544f-40af-bbb0-01b8c970e220-e2ff1d9c-0d35-4c8f-8e6f-3583fbd4f513",
+      "source": "d949a4c7-1e5c-442e-9516-e260a59aaec5",
+      "target": "41e09ed5-544f-40af-bbb0-01b8c970e220",
+      "sourceHandle": null,
+      "label": null
+    },
+    {
+      "id": "e-41e09ed5-544f-40af-bbb0-01b8c970e220-f3387870-c76e-443f-a4df-ed8d06c5246d-ed996cb9-9382-45ff-b8a3-db821bba6caf",
+      "source": "41e09ed5-544f-40af-bbb0-01b8c970e220",
+      "target": "f3387870-c76e-443f-a4df-ed8d06c5246d",
+      "sourceHandle": "ar1",
+      "label": null
+    },
+    {
+      "id": "e-f3387870-c76e-443f-a4df-ed8d06c5246d-0195537a-7270-423a-93e6-d6d543846d1e-e161f48f-ef18-4ec1-9b50-46ae0053c5ab",
+      "source": "f3387870-c76e-443f-a4df-ed8d06c5246d",
+      "target": "0195537a-7270-423a-93e6-d6d543846d1e",
+      "sourceHandle": null,
+      "label": null
+    }
+  ],
+  "variables": {
+    "choice": null,
+    "reputation": 50,
+    "coins": 0
+  },
+  "version": "1.0",
+  "timestamp": 1765464799790
+}

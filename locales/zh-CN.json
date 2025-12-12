@@ -1,0 +1,27 @@
+{
+  "settings": {
+    "title": "系统设置 | SYSTEM SETTINGS",
+    "description": "配置系统参数与偏好 | Configure system parameters and preferences",
+    "general": "常规设置",
+    "display": "显示设置",
+    "account": "账户设置",
+    "about": "关于系统",
+    "language": "系统语言",
+    "dateFormat": "日期格式",
+    "debugMode": "调试模式",
+    "autoSave": "自动保存",
+    "uiDensity": "界面密度",
+    "comfortable": "舒适",
+    "compact": "紧凑",
+    "reduceMotion": "减弱动画",
+    "theme": "主题",
+    "security": "安全设置",
+    "2fa": "双重认证",
+    "sessionTimeout": "会话超时",
+    "logoutAll": "登出所有设备",
+    "build": "构建版本",
+    "engine": "引擎版本",
+    "copyright": "© 2025 潮汐OA。保留所有权利。仅限授权人员访问。系统受监控。",
+    "status": "系统状态：稳定"
+  }
+}

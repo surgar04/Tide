@@ -1,0 +1,167 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+:root {
+  /* Endfield Palette - Light Mode */
+  --end-bg: #f4f4f4;
+  --end-surface: #ffffff;
+  --end-surface-hover: #f9f9f9;
+  --end-border: #d4d4d4;
+  --end-yellow: #FFC700; /* Distinctive Yellow */
+  --end-yellow-dim: #e6b400;
+  --end-text-main: #111111;
+  --end-text-sub: #666666;
+  --end-text-dim: #a3a3a3;
+  
+  --background: var(--end-bg);
+  --foreground: var(--end-text-main);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
+  --color-end-bg: var(--end-bg);
+  --color-end-surface: var(--end-surface);
+  --color-end-surface-hover: var(--end-surface-hover);
+  --color-end-border: var(--end-border);
+  --color-end-yellow: var(--end-yellow);
+  --color-end-yellow-dim: var(--end-yellow-dim);
+  --color-end-text-main: var(--end-text-main);
+  --color-end-text-sub: var(--end-text-sub);
+  --color-end-text-dim: var(--end-text-dim);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  
+  --animate-scan: scan 4s linear infinite;
+  --animate-blink: blink 1s step-end infinite;
+  --animate-glitch: glitch 1s linear infinite;
+  --animate-pulse-slow: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes scan {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 0% 100%; }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes glitch {
+  2%, 64% { transform: translate(2px,0) skew(0deg); }
+  4%, 60% { transform: translate(-2px,0) skew(0deg); }
+  62% { transform: translate(0,0) skew(5deg); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Endfield UI Utilities */
+.end-card {
+  background: var(--end-surface);
+  border: 1px solid var(--end-border);
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.end-card:hover {
+  border-color: var(--end-yellow);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px -10px rgba(255, 199, 0, 0.15);
+}
+
+.end-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(0,0,0,0.01) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+/* Corner decoration */
+.end-corner-tl {
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid var(--end-yellow);
+  border-left: 2px solid var(--end-yellow);
+  z-index: 10;
+}
+
+.end-corner-br {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 8px;
+  height: 8px;
+  border-bottom: 2px solid var(--end-yellow);
+  border-right: 2px solid var(--end-yellow);
+  z-index: 10;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+
+/* Utility for clip-path borders */
+.clip-path-navbar {
+  clip-path: polygon(
+    20px 0, 
+    100% 0, 
+    100% calc(100% - 20px), 
+    calc(100% - 20px) 100%, 
+    0 100%, 
+    0 20px
+  );
+}
+
+.clip-path-button {
+  clip-path: polygon(
+    0 0, 
+    100% 0, 
+    100% calc(100% - 10px), 
+    calc(100% - 10px) 100%, 
+    0 100%
+  );
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

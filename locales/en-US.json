@@ -1,0 +1,27 @@
+{
+  "settings": {
+    "title": "SYSTEM SETTINGS",
+    "description": "Configure system parameters and preferences",
+    "general": "GENERAL",
+    "display": "DISPLAY",
+    "account": "ACCOUNT",
+    "about": "ABOUT",
+    "language": "System Language",
+    "dateFormat": "Date Format",
+    "debugMode": "Debug Mode",
+    "autoSave": "Auto-Save",
+    "uiDensity": "UI Density",
+    "comfortable": "Comfortable",
+    "compact": "Compact",
+    "reduceMotion": "Reduce Motion",
+    "theme": "Theme",
+    "security": "Security",
+    "2fa": "Two-Factor Authentication",
+    "sessionTimeout": "Session Timeout",
+    "logoutAll": "LOG OUT ALL SESSIONS",
+    "build": "Build",
+    "engine": "Engine",
+    "copyright": "© 2025 TideOA. All rights reserved. Authorized personnel only. Access to this system is monitored.",
+    "status": "SYSTEM_STATUS: STABLE"
+  }
+}
