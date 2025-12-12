@@ -13,9 +13,12 @@ import {
   faBell, 
   faUser, 
   faGear,
-  faTerminal
+  faTerminal,
+  faSignOutAlt,
+  faBook
 } from "@fortawesome/free-solid-svg-icons";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/auth/context";
 
 const navItems = [
   { name: "首页", href: "/", icon: faHouse, label: "HOME" },
@@ -23,6 +26,7 @@ const navItems = [
   { name: "角色", href: "/roles", icon: faUserGroup, label: "OPERATORS" },
   { name: "地图", href: "/map", icon: faMap, label: "MAP" },
   { name: "剧情", href: "/story", icon: faBookOpen, label: "ARCHIVES" },
+  { name: "百科", href: "/wiki", icon: faBook, label: "WIKI" },
 ];
 
 const rightItems = [
@@ -33,6 +37,9 @@ const rightItems = [
 
 export function Navbar() {
   const pathname = usePathname();
+  const { user, logout } = useAuth();
+
+  if (pathname === '/login') return null;
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-6 px-6 pointer-events-none">
@@ -98,36 +105,39 @@ export function Navbar() {
           })}
         </div>
 
-        {/* Right Actions */}
-        <div className="flex items-center gap-4 px-6 border-l border-[var(--end-border)] bg-[var(--end-surface-hover)]">
-          {rightItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "w-8 h-8 flex items-center justify-center border transition-all duration-200",
-                  isActive 
-                    ? "border-[var(--end-yellow)] text-[var(--end-yellow)] bg-[var(--end-yellow)]/10" 
-                    : "border-[var(--end-border)] text-[var(--end-text-sub)] hover:border-[var(--end-text-main)] hover:text-[var(--end-text-main)]"
-                )}
-                title={`${item.name} | ${item.label}`}
-              >
-                <FontAwesomeIcon icon={item.icon} className="w-3.5 h-3.5" />
-              </Link>
-            );
-          })}
-          
-          {/* Status Indicator */}
-          <div className="flex flex-col items-end gap-0.5 ml-2">
-            <div className="flex gap-1">
-                <span className="w-1 h-1 bg-[var(--end-yellow)] rounded-full animate-[blink_2s_infinite]" />
-                <span className="w-1 h-1 bg-[var(--end-yellow)] rounded-full animate-[blink_2s_infinite_0.2s]" />
-                <span className="w-1 h-1 bg-[var(--end-yellow)] rounded-full animate-[blink_2s_infinite_0.4s]" />
-            </div>
-            <span className="text-[8px] font-mono text-[var(--end-yellow)]">在线 | ONLINE</span>
-          </div>
+        {/* Right Nav */}
+        <div className="flex items-center border-l border-[var(--end-border)] bg-[var(--end-surface-hover)] px-2">
+            {user && (
+                <div className="flex items-center gap-3 px-4 border-r border-[var(--end-border)]/50 mr-2">
+                    <div className="flex flex-col items-end">
+                        <span className="text-xs font-bold text-[var(--end-text-main)]">{user.username}</span>
+                        <span className="text-[10px] text-[var(--end-text-sub)] font-mono">LV.5 ADMIN</span>
+                    </div>
+                    <div className="w-8 h-8 rounded bg-slate-800 border border-[var(--end-yellow)] overflow-hidden">
+                        <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                    </div>
+                </div>
+            )}
+
+            {rightItems.map((item) => (
+                <Link
+                    key={item.href}
+                    href={item.href}
+                    className="w-10 h-10 flex items-center justify-center text-[var(--end-text-sub)] hover:text-[var(--end-yellow)] hover:bg-black/5 transition-colors relative group"
+                    title={item.name}
+                >
+                    <FontAwesomeIcon icon={item.icon} className="w-4 h-4" />
+                    <span className="absolute bottom-0 right-0 w-1 h-1 bg-[var(--end-yellow)] opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                </Link>
+            ))}
+            
+            <button 
+                onClick={logout}
+                className="w-10 h-10 flex items-center justify-center text-[var(--end-text-sub)] hover:text-red-400 hover:bg-black/5 transition-colors relative group ml-1"
+                title="退出登录"
+            >
+                <FontAwesomeIcon icon={faSignOutAlt} className="w-4 h-4" />
+            </button>
         </div>
       </motion.nav>
     </div>

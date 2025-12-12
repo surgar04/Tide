@@ -20,7 +20,7 @@ import {
 import '@xyflow/react/dist/style.css';
 import { v4 as uuidv4 } from 'uuid';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faSave, faDownload, faUpload, faPlay, faCog, faArrowLeft, faTimes, faProjectDiagram, faFileCode } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faSave, faDownload, faUpload, faPlay, faCog, faArrowLeft, faTimes, faProjectDiagram, faFileCode, faCheckCircle, faCode, faFileAlt, faPalette, faUserTag } from '@fortawesome/free-solid-svg-icons';
 
 import CustomNode from './CustomNode';
 import DialogueNode from './DialogueNode';
@@ -33,8 +33,10 @@ import BranchNode from './BranchNode';
 import TaskNode from './TaskNode';
 import RewardNode from './RewardNode';
 import PunishmentNode from './PunishmentNode';
+import PrefabNode from './PrefabNode'; // New import
 import NodeEditor from './NodeEditor';
 import VariableManager from './VariableManager';
+import PrefabManager from './PrefabManager'; // New import
 import StoryPlayer from './StoryPlayer';
 import RichTextEditor from './RichTextEditor';
 import StoryTree from './StoryTree';
@@ -54,6 +56,7 @@ const nodeTypes = {
   task: TaskNode,
   reward: RewardNode,
   punishment: PunishmentNode,
+  prefab: PrefabNode, // New type
 };
 
 export interface StoryEditorProps {
@@ -71,6 +74,7 @@ export default function StoryEditor({ filePath, projectId, onBack }: StoryEditor
   
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [showVarManager, setShowVarManager] = useState(false);
+  const [showPrefabManager, setShowPrefabManager] = useState(false); // New state
   const [showStoryTree, setShowStoryTree] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   
@@ -83,9 +87,74 @@ export default function StoryEditor({ filePath, projectId, onBack }: StoryEditor
   const [showRichEditor, setShowRichEditor] = useState(false);
   const [splitRatio, setSplitRatio] = useState(50);
   
+  // Prefab Bindings State
+  const [prefabBindings, setPrefabBindings] = useState<Record<string, any[]>>({}); // name -> [{ id, targetNodeId, color }]
+  
+  // Upload Modal State
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploadFileName, setUploadFileName] = useState("");
+  const [uploadType, setUploadType] = useState<'main' | 'branch'>('main');
+  
+  // Plot Preview State
+  const [showPlotPreview, setShowPlotPreview] = useState(false);
+  const [previewContent, setPreviewContent] = useState("");
+  const [previewMode, setPreviewMode] = useState<'script' | 'json'>('script');
+
   // Script Mode State
   const [viewMode, setViewMode] = useState<'visual' | 'script'>('visual');
   const [scriptContent, setScriptContent] = useState("");
+  const [colorMode, setColorMode] = useState(true);
+
+  // Real-time Preview Update
+  useEffect(() => {
+    if (!showPlotPreview) return;
+
+    const generatePreview = () => {
+        let script = "";
+        let currentNodes = nodes;
+        let currentEdges = edges;
+        let currentVars = variables;
+
+        if (viewMode === 'visual') {
+            // In Visual Mode: Generate script from nodes
+            script = nodesToScript(nodes, edges);
+        } else {
+            // In Script Mode: Use current script content
+            // And we also need to parse it to get nodes/edges for JSON view
+            script = scriptContent;
+            if (previewMode === 'json') {
+                const parsed = scriptToNodes(scriptContent, [], prefabBindings);
+                currentNodes = parsed.nodes;
+                currentEdges = parsed.edges;
+            }
+        }
+
+        if (previewMode === 'script') {
+            setPreviewContent(script);
+        } else {
+            const plotData = {
+                type: 'tideoa_plot',
+                version: '1.0',
+                timestamp: Date.now(),
+                project: {
+                    id: filePath,
+                    name: filePath.split('/').pop()?.replace('.plot', '') || 'Untitled'
+                },
+                data: {
+                    nodes: currentNodes,
+                    edges: currentEdges,
+                    variables: currentVars,
+                    script: script
+                }
+            };
+            setPreviewContent(JSON.stringify(plotData, null, 2));
+        }
+    };
+
+    // Debounce slightly or just run
+    const timer = setTimeout(generatePreview, 200);
+    return () => clearTimeout(timer);
+  }, [showPlotPreview, previewMode, viewMode, nodes, edges, variables, scriptContent, filePath]);
 
   const switchToScriptMode = useCallback(() => {
     const script = nodesToScript(nodes, edges);
@@ -100,11 +169,11 @@ export default function StoryEditor({ filePath, projectId, onBack }: StoryEditor
   }, []);
 
   const handleScriptSave = useCallback(() => {
-    const { nodes: newNodes, edges: newEdges } = scriptToNodes(scriptContent, nodes);
+    const { nodes: newNodes, edges: newEdges } = scriptToNodes(scriptContent, nodes, prefabBindings);
     setNodes(newNodes);
     setEdges(newEdges);
     setViewMode('visual');
-  }, [scriptContent, nodes, setNodes, setEdges]);
+  }, [scriptContent, nodes, setNodes, setEdges, prefabBindings]);
 
   // Script Mode State
 
@@ -123,10 +192,36 @@ export default function StoryEditor({ filePath, projectId, onBack }: StoryEditor
                     setNodes(project.nodes);
                     setEdges(project.edges || []);
                     if (project.variables) setVariables(project.variables);
+                    // Initialize script content if available or generate it
+                    if (project.type === 'tideoa_plot' && project.data?.script) {
+                        setScriptContent(project.data.script);
+                    } else {
+                        setScriptContent(nodesToScript(project.nodes, project.edges || []));
+                    }
                 }
             } else {
                 console.error("Failed to load tutorial file");
             }
+        } else if (filePath === 'public/tutorial_project_2.plot') {
+             // Load tutorial 2
+             const res = await fetch('/tutorial_project_2.plot');
+             if (res.ok) {
+                 const project = await res.json();
+                 if (project.type === 'tideoa_plot' && project.data) {
+                      setNodes(project.data.nodes || []);
+                      setEdges(project.data.edges || []);
+                      setVariables(project.data.variables || {});
+                      setPrefabBindings(project.data.prefabBindings || {});
+                      setScriptContent(project.data.script || '');
+                      
+                      // Auto-parse if script exists but nodes don't (initial load of script-only file)
+                      if ((!project.data.nodes || project.data.nodes.length === 0) && project.data.script) {
+                          const { nodes: parsedNodes, edges: parsedEdges } = scriptToNodes(project.data.script, [], project.data.prefabBindings || {});
+                          setNodes(parsedNodes);
+                          setEdges(parsedEdges);
+                      }
+                 }
+             }
         } else {
             // Check if file exists by fetching it
             const res = await fetch(`/api/github/file?path=${encodeURIComponent(filePath)}`);
@@ -135,10 +230,22 @@ export default function StoryEditor({ filePath, projectId, onBack }: StoryEditor
               const text = await blob.text();
               const project = JSON.parse(text);
               
-              if (project.nodes && Array.isArray(project.nodes)) {
+              if (project.type === 'tideoa_plot') {
+                  // New .plot format
+                  if (project.data) {
+                      setNodes(project.data.nodes || []);
+                      setEdges(project.data.edges || []);
+                      setVariables(project.data.variables || {});
+                      setPrefabBindings(project.data.prefabBindings || {});
+                      setScriptContent(project.data.script || '');
+                  }
+              } else if (project.nodes && Array.isArray(project.nodes)) {
+                // Legacy .story.json format
                 setNodes(project.nodes);
                 setEdges(project.edges || []);
                 if (project.variables) setVariables(project.variables);
+                // Generate script for legacy files
+                setScriptContent(nodesToScript(project.nodes, project.edges || []));
               }
             } else {
               // File might not exist (new file), keep initial state
@@ -159,16 +266,47 @@ export default function StoryEditor({ filePath, projectId, onBack }: StoryEditor
   const handleSaveToGithub = useCallback(async () => {
     setIsSaving(true);
     try {
-      const projectData = {
-        id: filePath, // Use path as ID for internal reference if needed
-        nodes,
-        edges,
-        variables,
-        version: '1.0',
-        timestamp: Date.now()
-      };
+      let content = "";
+      
+      // Determine script content
+      let currentScript = scriptContent;
+      if (viewMode === 'visual') {
+          // If in visual mode, regenerate script from nodes to ensure it matches
+          currentScript = nodesToScript(nodes, edges);
+          setScriptContent(currentScript);
+      }
 
-      const content = JSON.stringify(projectData, null, 2);
+      if (filePath.endsWith('.plot')) {
+          const plotData = {
+              type: 'tideoa_plot',
+              version: '1.0',
+              timestamp: Date.now(),
+              project: {
+                  id: filePath,
+                  name: filePath.split('/').pop()?.replace('.plot', '') || 'Untitled'
+              },
+              data: {
+                  nodes,
+                  edges,
+                  variables,
+                  prefabBindings,
+                  script: currentScript
+              }
+          };
+          content = JSON.stringify(plotData, null, 2);
+      } else {
+          // Legacy format
+          const projectData = {
+            id: filePath, // Use path as ID for internal reference if needed
+            nodes,
+            edges,
+            variables,
+            version: '1.0',
+            timestamp: Date.now()
+          };
+          content = JSON.stringify(projectData, null, 2);
+      }
+
       const base64Content = btoa(unescape(encodeURIComponent(content))); // Handle UTF-8 chars
 
       const message = `Update story: ${filePath.split('/').pop()}`;
@@ -192,7 +330,120 @@ export default function StoryEditor({ filePath, projectId, onBack }: StoryEditor
     } finally {
       setIsSaving(false);
     }
-  }, [filePath, nodes, edges, variables]);
+  }, [filePath, nodes, edges, variables, scriptContent, viewMode]);
+
+  const handleCompleteClick = useCallback(() => {
+    // Determine default filename from current path
+    const currentName = filePath.split('/').pop()?.replace('.plot', '').replace('.story.json', '') || '';
+    setUploadFileName(currentName);
+    // Determine default type based on existing tags or name?
+    // For now, default to main
+    setUploadType('main');
+    setShowUploadModal(true);
+  }, [filePath]);
+
+  const handleConfirmUpload = async () => {
+    if (!uploadFileName.trim()) {
+        alert("请输入文件名");
+        return;
+    }
+    
+    setIsSaving(true);
+    setShowUploadModal(false);
+
+    try {
+        // 1. Prepare data
+        let currentScript = scriptContent;
+        if (viewMode === 'visual') {
+            currentScript = nodesToScript(nodes, edges);
+        }
+
+        const tag = uploadType === 'main' ? 'main-line' : 'branch-line';
+        
+        // Add tag to start node if not present (optional logic, but requested "assign tag")
+        // We can add it to project metadata or a specific root node. 
+        // Let's add it to the project metadata in .plot file.
+
+        // 2. Generate .plot file
+        const plotData = {
+            type: 'tideoa_plot',
+            version: '1.0',
+            timestamp: Date.now(),
+            project: {
+                id: `${projectId}/${uploadFileName}.plot`,
+                name: uploadFileName,
+                storyType: uploadType,
+                tags: [tag]
+            },
+            data: {
+                nodes,
+                edges,
+                variables,
+                script: currentScript
+            }
+        };
+        const plotContent = JSON.stringify(plotData, null, 2);
+
+        // 3. Generate .json file (Legacy/Interchange)
+        const jsonData = {
+            id: `${projectId}/${uploadFileName}.story.json`,
+            nodes,
+            edges,
+            variables,
+            version: '1.0',
+            timestamp: Date.now(),
+            metadata: {
+                storyType: uploadType,
+                tags: [tag]
+            }
+        };
+        const jsonContent = JSON.stringify(jsonData, null, 2);
+
+        // 4. Generate .md file
+        let mdContent = `# ${uploadFileName}\n\n`;
+        mdContent += `Type: ${uploadType === 'main' ? '主线 (Main Line)' : '支线 (Branch Line)'}\n`;
+        mdContent += `Date: ${new Date().toLocaleString()}\n\n---\n\n`;
+        mdContent += currentScript.split('\n').map(line => {
+            if (line.startsWith('[')) return `### ${line}`;
+            return line;
+        }).join('\n');
+        
+        // 5. Upload all three files
+        const filesToUpload = [
+            { path: `${projectId}/${uploadFileName}.plot`, content: plotContent },
+            { path: `${projectId}/${uploadFileName}.story.json`, content: jsonContent },
+            { path: `${projectId}/${uploadFileName}.md`, content: mdContent }
+        ];
+
+        for (const file of filesToUpload) {
+            const base64Content = btoa(unescape(encodeURIComponent(file.content)));
+            const message = `Upload story (${uploadType}): ${uploadFileName}`;
+            
+            await fetch("/api/github/upload", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    path: file.path,
+                    content: base64Content,
+                    message
+                })
+            });
+        }
+
+        alert("上传成功！所有格式文件已保存。");
+        // Update current file path if name changed
+        if (filePath !== `${projectId}/${uploadFileName}.plot`) {
+             // We might want to notify parent to refresh or redirect?
+             // For now, just alert.
+        }
+
+    } catch (e) {
+        console.error("Upload failed", e);
+        alert("上传失败，请重试");
+    } finally {
+        setIsSaving(false);
+    }
+  };
 
   const onConnect = useCallback(
     (params: Connection) => {
@@ -511,7 +762,7 @@ export default function StoryEditor({ filePath, projectId, onBack }: StoryEditor
   // Script Mode View
   if (viewMode === 'script') {
     return (
-        <div className="w-full h-full p-4 bg-slate-50 flex flex-col">
+        <div className={`w-full h-full p-4 bg-slate-50 flex flex-col relative ${!colorMode ? 'story-editor-no-color' : ''}`}>
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-4">
                     <button 
@@ -522,14 +773,63 @@ export default function StoryEditor({ filePath, projectId, onBack }: StoryEditor
                     </button>
                     <div className="text-sm font-bold text-slate-800">剧本编辑器 (Script Editor)</div>
                 </div>
+                
+                <div className="flex items-center gap-2">
+                    <button 
+                        onClick={() => setShowPrefabManager(!showPrefabManager)}
+                        className={`px-3 py-1.5 text-xs font-bold border border-slate-200 rounded-lg flex items-center gap-2 transition-colors ${showPrefabManager ? 'bg-slate-100 text-slate-800 border-slate-300' : 'bg-white hover:bg-slate-50 text-slate-600'}`}
+                        title="NPC 预制体绑定"
+                    >
+                        <FontAwesomeIcon icon={faUserTag} /> 预制体
+                    </button>
+
+                    <button 
+                        onClick={() => setColorMode(!colorMode)}
+                        className={`px-3 py-1.5 text-xs font-bold border rounded-lg flex items-center gap-2 transition-colors ${colorMode ? 'bg-indigo-100 text-indigo-700 border-indigo-200' : 'bg-white text-slate-500 border-slate-200'}`}
+                        title={colorMode ? "关闭彩色显示" : "开启彩色显示"}
+                    >
+                        <FontAwesomeIcon icon={faPalette} /> {colorMode ? "Colors ON" : "Colors OFF"}
+                    </button>
+                </div>
             </div>
             <div className="flex-1 border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                 <StoryScriptEditor 
                     content={scriptContent}
                     onChange={setScriptContent}
                     onSave={handleScriptSave}
+                    prefabBindings={prefabBindings}
                 />
             </div>
+
+            {showPrefabManager && (
+                <PrefabManager 
+                    bindings={prefabBindings}
+                    onUpdate={(bindings) => setPrefabBindings(bindings)}
+                    onClose={() => setShowPrefabManager(false)}
+                    nodes={nodes}
+                />
+            )}
+
+            <style jsx global>{`
+                .story-editor-no-color .story-node-highlight {
+                    color: inherit !important;
+                    font-weight: normal !important;
+                    --node-color: inherit;
+                }
+                .story-editor-no-color .story-node-tag {
+                    color: inherit !important;
+                    font-weight: bold !important; /* Keep tags bold? Or remove bold too? User said "close color display". */
+                }
+                .story-editor-no-color .story-node-option {
+                    color: inherit !important;
+                }
+                
+                /* Define colored highlighting */
+                .story-node-highlight {
+                    color: var(--node-color);
+                    /* font-weight: 500; Maybe slight weight? */
+                }
+            `}</style>
         </div>
     );
   }
@@ -575,6 +875,25 @@ export default function StoryEditor({ filePath, projectId, onBack }: StoryEditor
             >
                 <FontAwesomeIcon icon={faSave} className={isSaving ? "animate-spin" : ""} /> 
                 {isSaving ? "保存中..." : "保存项目"}
+            </button>
+            
+            <button 
+                onClick={handleCompleteClick}
+                disabled={isSaving}
+                className="px-4 py-1.5 bg-green-500 hover:bg-green-600 text-white text-sm font-bold rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50 shadow-sm"
+            >
+                <FontAwesomeIcon icon={faCheckCircle} /> 
+                完成并发布
+            </button>
+            
+            <div className="h-6 w-px bg-slate-200" />
+
+            <button 
+                onClick={() => setShowPlotPreview(!showPlotPreview)}
+                className={`px-3 py-1.5 text-xs font-bold border rounded-lg flex items-center gap-2 transition-colors ${showPlotPreview ? 'bg-[var(--end-yellow)] text-black border-[var(--end-yellow)]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}
+                title="实时查看 .plot 内容"
+            >
+                <FontAwesomeIcon icon={faCode} /> .plot
             </button>
 
             <div className="relative ml-2">
@@ -632,6 +951,14 @@ export default function StoryEditor({ filePath, projectId, onBack }: StoryEditor
                 title="全局变量管理"
             >
                 <FontAwesomeIcon icon={faCog} /> 变量管理
+            </button>
+
+            <button 
+                onClick={() => setShowPrefabManager(!showPrefabManager)}
+                className={`px-3 py-1.5 text-xs font-bold border border-slate-200 rounded-lg flex items-center gap-2 transition-colors ${showPrefabManager ? 'bg-slate-100 text-slate-800 border-slate-300' : 'bg-white hover:bg-slate-50 text-slate-600'}`}
+                title="NPC 预制体绑定"
+            >
+                <FontAwesomeIcon icon={faUserTag} /> 预制体
             </button>
             
             <div className="h-6 w-px bg-slate-200" />
@@ -725,6 +1052,15 @@ export default function StoryEditor({ filePath, projectId, onBack }: StoryEditor
             />
         )}
 
+        {showPrefabManager && (
+            <PrefabManager 
+                bindings={prefabBindings}
+                onUpdate={(bindings) => setPrefabBindings(bindings)}
+                onClose={() => setShowPrefabManager(false)}
+                nodes={nodes} // To select target nodes
+            />
+        )}
+
         {isPlaying && (
             <StoryPlayer 
                 nodes={nodes}
@@ -755,6 +1091,118 @@ export default function StoryEditor({ filePath, projectId, onBack }: StoryEditor
                   />
                 )}
              </div>
+        </div>
+      )}
+
+      {/* Plot Preview Panel */}
+      {showPlotPreview && (
+        <div 
+            className="h-full bg-slate-900 shadow-xl relative z-20 animate-in slide-in-from-right duration-300 flex flex-col w-1/3 border-l border-slate-700"
+        >
+             <div className="flex justify-between items-center p-3 border-b border-slate-800 bg-slate-900">
+                <div className="flex items-center gap-2">
+                    <span className="font-bold text-sm text-slate-300 ml-2">.plot 实时预览</span>
+                    <div className="flex bg-slate-800 rounded p-0.5 border border-slate-700">
+                        <button 
+                            onClick={() => setPreviewMode('script')}
+                            className={`px-2 py-0.5 text-[10px] font-bold rounded transition-colors ${previewMode === 'script' ? 'bg-slate-700 text-white' : 'text-slate-500 hover:text-slate-300'}`}
+                        >
+                            SCRIPT
+                        </button>
+                        <button 
+                            onClick={() => setPreviewMode('json')}
+                            className={`px-2 py-0.5 text-[10px] font-bold rounded transition-colors ${previewMode === 'json' ? 'bg-slate-700 text-white' : 'text-slate-500 hover:text-slate-300'}`}
+                        >
+                            JSON
+                        </button>
+                    </div>
+                </div>
+                <button onClick={() => setShowPlotPreview(false)} className="text-slate-500 hover:text-slate-300 p-1 hover:bg-slate-800 rounded">
+                    <FontAwesomeIcon icon={faTimes} />
+                </button>
+             </div>
+             <div className="flex-1 overflow-auto bg-[#1e1e1e] p-4 font-mono text-xs text-slate-300">
+                <pre className="whitespace-pre-wrap break-all">
+                    {previewContent || "// Loading preview..."}
+                </pre>
+             </div>
+             <div className="p-2 border-t border-slate-800 bg-slate-900 text-[10px] text-slate-500 text-center">
+                 {viewMode === 'visual' ? 'Generated from Graph' : 'Generated from Editor'} • Real-time Sync
+             </div>
+        </div>
+      )}
+
+      {/* Upload Modal */}
+      {showUploadModal && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-white rounded-xl shadow-2xl w-96 overflow-hidden">
+                <div className="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                    <h3 className="font-bold text-slate-800">完成并发布剧情</h3>
+                    <button onClick={() => setShowUploadModal(false)} className="text-slate-400 hover:text-slate-600">
+                        <FontAwesomeIcon icon={faTimes} />
+                    </button>
+                </div>
+                <div className="p-6 space-y-4">
+                    <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-500 uppercase">剧情文件名</label>
+                        <input 
+                            type="text" 
+                            value={uploadFileName}
+                            onChange={(e) => setUploadFileName(e.target.value)}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--end-yellow)] text-sm"
+                            placeholder="例如：Chapter1_Part1"
+                        />
+                    </div>
+                    
+                    <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-500 uppercase">剧情类型</label>
+                        <div className="grid grid-cols-2 gap-3">
+                            <button 
+                                onClick={() => setUploadType('main')}
+                                className={`px-4 py-2 rounded-lg border text-sm font-bold transition-all ${uploadType === 'main' ? 'bg-[var(--end-yellow)] border-[var(--end-yellow)] text-black' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                            >
+                                主线剧情
+                            </button>
+                            <button 
+                                onClick={() => setUploadType('branch')}
+                                className={`px-4 py-2 rounded-lg border text-sm font-bold transition-all ${uploadType === 'branch' ? 'bg-teal-500 border-teal-500 text-white' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                            >
+                                支线/其他
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="bg-slate-50 p-3 rounded-lg text-xs text-slate-500 space-y-1">
+                        <p className="font-bold text-slate-700 mb-1">即将发布的文件：</p>
+                        <div className="flex items-center gap-2">
+                            <FontAwesomeIcon icon={faProjectDiagram} className="text-[var(--end-yellow)]" />
+                            <span>{uploadFileName || '...'}.plot (可视化源文件)</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <FontAwesomeIcon icon={faFileCode} className="text-blue-400" />
+                            <span>{uploadFileName || '...'}.story.json (通用数据)</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <FontAwesomeIcon icon={faFileAlt} className="text-slate-400" />
+                            <span>{uploadFileName || '...'}.md (阅读文档)</span>
+                        </div>
+                    </div>
+                </div>
+                <div className="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2">
+                    <button 
+                        onClick={() => setShowUploadModal(false)}
+                        className="px-4 py-2 text-slate-600 font-bold text-sm hover:bg-slate-200 rounded-lg transition-colors"
+                    >
+                        取消
+                    </button>
+                    <button 
+                        onClick={handleConfirmUpload}
+                        className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white font-bold text-sm rounded-lg transition-colors shadow-sm"
+                    >
+                        确认发布
+                    </button>
+                </div>
+            </div>
         </div>
       )}
       </div>

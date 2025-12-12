@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faRedo, faHistory, faImage, faCommentDots, faBookOpen, faMapSigns, faClipboardList, faGift, faExclamationTriangle, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { StoryNodeData, ChoiceOption, NodeType } from '../types';
@@ -15,6 +15,9 @@ export default function StoryPlayer({ nodes, edges, initialVariables, onClose }:
   const [currentNodeId, setCurrentNodeId] = useState<string | null>(null);
   const [history, setHistory] = useState<string[]>([]);
   const [variables, setVariables] = useState<Record<string, any>>({ ...initialVariables });
+  
+  // Track last processed logic node to prevent infinite loops
+  const processingNodeId = useRef<string | null>(null);
 
   // Find start node
   useEffect(() => {
@@ -48,8 +51,23 @@ export default function StoryPlayer({ nodes, edges, initialVariables, onClose }:
   // Auto-progression for logic nodes
   useEffect(() => {
     if (!currentNode) return;
-
+    
     const type = currentNode.type as NodeType;
+    
+    const isLogicNode = ['condition', 'setter', 'reward', 'punishment'].includes(type);
+    
+    // If not a logic node, clear the processing lock so we can re-enter logic nodes later
+    if (!isLogicNode) {
+        processingNodeId.current = null;
+        return;
+    }
+
+    // Prevent re-processing the same logic node if it causes state updates
+    if (processingNodeId.current === currentNode.id) return;
+
+    // Mark as processed immediately
+    processingNodeId.current = currentNode.id;
+    
     const data = currentNode.data as unknown as StoryNodeData;
 
     if (type === 'condition') {
@@ -142,6 +160,7 @@ export default function StoryPlayer({ nodes, edges, initialVariables, onClose }:
   const handleRestart = () => {
     setHistory([]);
     setVariables({ ...initialVariables });
+    processingNodeId.current = null;
     const startNode = nodes.find(n => 
       (n.data.tags as string[])?.includes('start') || 
       (n.data.label as string).toLowerCase() === 'start'

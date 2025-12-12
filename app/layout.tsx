@@ -5,6 +5,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { ThreeMapBackground } from "@/components/ui/ThreeMapBackground";
 import { TimeTracker } from "@/components/TimeTracker";
 import { I18nProvider } from "@/lib/i18n";
+import { AuthProvider } from "@/lib/auth/context";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,18 +32,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[var(--end-bg)] text-[var(--end-text-main)] min-h-screen selection:bg-[var(--end-yellow)] selection:text-black overflow-x-hidden`}
       >
-        <I18nProvider>
-          <TimeTracker />
-          <ThreeMapBackground />
-          
-          <Navbar />
-          
-          <main className="min-h-screen pt-24 md:pt-32 transition-all duration-300 relative">
-            <div className="p-4 md:p-8 max-w-[1600px] mx-auto">
-              {children}
-            </div>
-          </main>
-        </I18nProvider>
+        <AuthProvider>
+          <I18nProvider>
+            <TimeTracker />
+            <ThreeMapBackground />
+            
+            <Navbar />
+            
+            <main className="min-h-screen pt-24 md:pt-32 transition-all duration-300 relative">
+              <div className="p-4 md:p-8 max-w-[1600px] mx-auto">
+                {children}
+              </div>
+            </main>
+          </I18nProvider>
+        </AuthProvider>
       </body>
     </html>
   );
