@@ -49,15 +49,17 @@ export async function uploadFile(
   path: string,
   content: string | Buffer, // Base64 encoded content
   message: string,
-  branch: string = "main"
+  branch: string = "main",
+  owner: string = OWNER,
+  repo: string = REPO
 ) {
   try {
     // Check if file exists to get SHA (for update)
     let sha: string | undefined;
     try {
       const { data } = await github.rest.repos.getContent({
-        owner: OWNER,
-        repo: REPO,
+        owner,
+        repo,
         path,
         ref: branch,
       });
@@ -69,8 +71,8 @@ export async function uploadFile(
     }
 
     const { data } = await github.rest.repos.createOrUpdateFileContents({
-      owner: OWNER,
-      repo: REPO,
+      owner,
+      repo,
       path,
       message,
       content: typeof content === 'string' ? content : content.toString('base64'),

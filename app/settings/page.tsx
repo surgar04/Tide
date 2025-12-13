@@ -3,12 +3,13 @@
 "use client";
 
 import { PageHeader } from "@/components/ui/PageHeader";
-import { faGear, faDesktop, faUserShield, faCircleInfo, faCheck, faChevronRight, faGlobe, faMicrochip } from "@fortawesome/free-solid-svg-icons";
+import { faGear, faDesktop, faUserShield, faCircleInfo, faCheck, faChevronRight, faGlobe, faMicrochip, faDownload, faSpinner, faRotate } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
+import { useAuth } from "@/lib/auth/context";
 
 export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState("general");
@@ -169,15 +170,21 @@ function DisplaySettings() {
 
 function AccountSettings() {
   const { t } = useI18n();
+  const { user } = useAuth();
+  
   return (
     <div className="space-y-6">
       <div className="bg-[var(--end-surface-hover)] border border-[var(--end-border)] p-4 rounded-lg flex items-center gap-4">
-        <div className="w-12 h-12 bg-[var(--end-yellow)] rounded-full flex items-center justify-center font-bold text-xl text-black">
-          A
+        <div className="w-12 h-12 bg-[var(--end-yellow)] rounded-full flex items-center justify-center font-bold text-xl text-black overflow-hidden">
+          {user?.avatar ? (
+             <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
+          ) : (
+             (user?.username?.[0] || "A").toUpperCase()
+          )}
         </div>
         <div>
-          <div className="font-bold">Administrator</div>
-          <div className="text-sm text-[var(--end-text-dim)]">admin@tideoa.com</div>
+          <div className="font-bold">{user?.username || "Administrator"}</div>
+          <div className="text-sm text-[var(--end-text-dim)]">{user?.email || "admin@tideoa.com"}</div>
         </div>
         <div className="ml-auto">
           <button className="text-xs border border-[var(--end-border)] px-3 py-1 rounded hover:bg-[var(--end-text-main)] hover:text-white transition-colors">
@@ -208,24 +215,82 @@ function AccountSettings() {
 
 function AboutSettings() {
   const { t } = useI18n();
-  const [systemInfo, setSystemInfo] = useState({ version: "...", nextVersion: "..." });
+  const [systemInfo, setSystemInfo] = useState({ version: "Loading...", nextVersion: "..." });
+  const [updateStatus, setUpdateStatus] = useState<'idle' | 'checking' | 'available' | 'updating' | 'success' | 'error'>('idle');
+  const [latestVersion, setLatestVersion] = useState<string | null>(null);
+  const [updateMessage, setUpdateMessage] = useState("");
 
   useEffect(() => {
-    fetch("/api/system/version")
+    // Initial version fetch
+    fetch("/api/system/update/check")
       .then(res => res.json())
-      .then(data => setSystemInfo(data))
-      .catch(console.error);
+      .then(data => {
+        setSystemInfo({ version: data.currentVersion, nextVersion: "16.0.8" });
+      })
+      .catch(err => {
+        console.error(err);
+        setSystemInfo({ version: "Unknown", nextVersion: "16.0.8" });
+      });
   }, []);
+
+  const checkForUpdates = async () => {
+    setUpdateStatus('checking');
+    try {
+      const res = await fetch("/api/system/update/check");
+      const data = await res.json();
+      
+      if (data.hasUpdate) {
+        setLatestVersion(data.latestVersion);
+        setUpdateStatus('available');
+        setUpdateMessage(`New version ${data.latestVersion} available!`);
+      } else {
+        setUpdateStatus('idle');
+        setUpdateMessage("System is up to date.");
+        setTimeout(() => setUpdateMessage(""), 3000);
+      }
+    } catch (error) {
+      setUpdateStatus('error');
+      setUpdateMessage("Failed to check for updates.");
+    }
+  };
+
+  const performUpdate = async () => {
+    setUpdateStatus('updating');
+    try {
+      const res = await fetch("/api/system/update/perform", { method: 'POST' });
+      const data = await res.json();
+      
+      if (data.success) {
+        setUpdateStatus('success');
+        setUpdateMessage(data.message);
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (error: any) {
+      setUpdateStatus('error');
+      setUpdateMessage(error.message || "Update failed.");
+    }
+  };
 
   return (
     <div className="space-y-8 text-center py-12">
-      <div className="w-24 h-24 bg-[var(--end-text-main)] mx-auto rounded-full flex items-center justify-center">
-         <FontAwesomeIcon icon={faGlobe} className="text-4xl text-[var(--end-yellow)] animate-[spin_20s_linear_infinite]" />
+      <div className="w-24 h-24 bg-[var(--end-text-main)] mx-auto rounded-full flex items-center justify-center relative overflow-hidden">
+         <img 
+            src="/1.webp" 
+            alt="System Logo" 
+            className="w-full h-full object-cover animate-[spin_20s_linear_infinite]" 
+         />
+         {updateStatus === 'available' && (
+           <span className="absolute top-0 right-0 w-4 h-4 bg-[var(--end-yellow)] rounded-full animate-ping z-10"></span>
+         )}
       </div>
       
       <div>
         <h3 className="text-2xl font-bold tracking-tight">TIDE GAME OA</h3>
-        <p className="text-[var(--end-text-dim)] font-mono text-sm mt-2">Version {systemInfo.version} (Beta)</p>
+        <p className="text-[var(--end-text-dim)] font-mono text-sm mt-2">
+            Version {systemInfo.version} (Beta)
+            {latestVersion && updateStatus === 'available' && <span className="text-[var(--end-yellow)] ml-2">→ {latestVersion}</span>}
+        </p>
       </div>
 
       <div className="grid grid-cols-2 gap-4 max-w-md mx-auto text-left">
@@ -237,6 +302,45 @@ function AboutSettings() {
           <div className="text-xs text-[var(--end-text-dim)] uppercase">{t("settings.engine")}</div>
           <div className="font-mono">Next.js {systemInfo.nextVersion}</div>
         </div>
+      </div>
+
+      {/* Update Controls */}
+      <div className="max-w-md mx-auto p-4 border border-[var(--end-border)] bg-[var(--end-surface)] rounded-lg">
+        <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-bold uppercase text-[var(--end-text-sub)]">System Update</span>
+            {updateStatus === 'checking' && <FontAwesomeIcon icon={faSpinner} className="animate-spin text-[var(--end-yellow)]" />}
+        </div>
+        
+        <div className="text-sm mb-4 min-h-[20px] text-[var(--end-text-dim)]">
+            {updateMessage || "Check for the latest system updates."}
+        </div>
+
+        {updateStatus === 'available' ? (
+            <button 
+                onClick={performUpdate}
+                className="w-full bg-[var(--end-yellow)] text-black font-bold py-2 rounded hover:brightness-110 transition-all flex items-center justify-center gap-2"
+            >
+                <FontAwesomeIcon icon={faDownload} />
+                INSTALL UPDATE
+            </button>
+        ) : updateStatus === 'updating' ? (
+             <div className="w-full bg-white/10 text-white font-bold py-2 rounded flex items-center justify-center gap-2 cursor-wait">
+                <FontAwesomeIcon icon={faRotate} className="animate-spin" />
+                UPDATING...
+            </div>
+        ) : updateStatus === 'success' ? (
+            <div className="w-full bg-green-500/20 text-green-400 font-bold py-2 rounded border border-green-500/50">
+                UPDATE COMPLETE
+            </div>
+        ) : (
+            <button 
+                onClick={checkForUpdates}
+                disabled={updateStatus === 'checking'}
+                className="w-full border border-[var(--end-border)] hover:bg-white/5 text-[var(--end-text-main)] font-bold py-2 rounded transition-all disabled:opacity-50"
+            >
+                CHECK FOR UPDATES
+            </button>
+        )}
       </div>
 
       <p className="text-xs text-[var(--end-text-dim)] max-w-lg mx-auto leading-relaxed">

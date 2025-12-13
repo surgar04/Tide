@@ -16,10 +16,15 @@ import {
   faTerminal,
   faSignOutAlt,
   faBook,
-  faCloud
+  faCloud,
+  faDatabase
 } from "@fortawesome/free-solid-svg-icons";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth/context";
+import { AccessCardModal } from "@/components/ui/AccessCardModal";
+import { useState, useEffect } from "react";
+import { calculateLevel } from "@/lib/levelUtils";
+import { AchievementWatcher } from "@/components/AchievementWatcher";
 
 const navItems = [
   { name: "首页", href: "/", icon: faHouse, label: "HOME" },
@@ -28,6 +33,7 @@ const navItems = [
   { name: "地图", href: "/map", icon: faMap, label: "MAP" },
   { name: "剧情", href: "/story", icon: faBookOpen, label: "ARCHIVES" },
   { name: "百科", href: "/wiki", icon: faBook, label: "WIKI" },
+  { name: "数据", href: "/data", icon: faDatabase, label: "DATA" },
 ];
 
 const rightItems = [
@@ -40,10 +46,33 @@ const rightItems = [
 export function Navbar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const [showAccessCard, setShowAccessCard] = useState(false);
+  const [level, setLevel] = useState(1);
+
+  useEffect(() => {
+    if (user) {
+        const fetchLevel = () => {
+            fetch("/api/user")
+                .then(res => res.json())
+                .then(data => {
+                    if (data && typeof data.totalTime === 'number') {
+                        setLevel(calculateLevel(data.totalTime));
+                    }
+                })
+                .catch(console.error);
+        };
+
+        fetchLevel();
+        // Update every minute to reflect progress
+        const interval = setInterval(fetchLevel, 60000);
+        return () => clearInterval(interval);
+    }
+  }, [user]);
 
   if (pathname === '/login') return null;
 
   return (
+    <>
     <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-6 px-6 pointer-events-none">
       <motion.nav 
         initial={{ y: -100, opacity: 0 }}
@@ -110,15 +139,50 @@ export function Navbar() {
         {/* Right Nav */}
         <div className="flex items-center border-l border-[var(--end-border)] bg-[var(--end-surface-hover)] px-2">
             {user && (
-                <div className="flex items-center gap-3 px-4 border-r border-[var(--end-border)]/50 mr-2">
-                    <div className="flex flex-col items-end">
-                        <span className="text-xs font-bold text-[var(--end-text-main)]">{user.username}</span>
-                        <span className="text-[10px] text-[var(--end-text-sub)] font-mono">LV.5 ADMIN</span>
+                <motion.div 
+                    className="flex items-center gap-3 px-4 py-1 border-r border-[var(--end-border)]/50 mr-2 cursor-pointer relative group overflow-hidden"
+                    whileHover="hover"
+                    initial="initial"
+                    onClick={() => setShowAccessCard(true)}
+                >
+                    {/* Hover Background */}
+                    <motion.div 
+                        className="absolute inset-0 bg-[var(--end-yellow)]/5"
+                        variants={{
+                            initial: { opacity: 0 },
+                            hover: { opacity: 1 }
+                        }}
+                    />
+
+                    {/* Scanline Effect */}
+                    <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--end-yellow)]/20 to-transparent skew-x-12 w-1/2"
+                        variants={{
+                            initial: { x: "-200%" },
+                            hover: { x: "200%", transition: { duration: 0.6, ease: "easeInOut" } }
+                        }}
+                    />
+
+                    <div className="flex flex-col items-end z-10">
+                        <motion.span 
+                            className="text-xs font-bold text-[var(--end-text-main)]"
+                            variants={{
+                                hover: { color: "var(--end-yellow)" }
+                            }}
+                        >
+                            {user.username}
+                        </motion.span>
+                        <span className="text-[10px] text-[var(--end-text-sub)] font-mono">LV.{level} ADMIN</span>
                     </div>
-                    <div className="w-8 h-8 rounded bg-slate-800 border border-[var(--end-yellow)] overflow-hidden">
+                    <motion.div 
+                        className="w-8 h-8 rounded bg-slate-800 border border-[var(--end-yellow)] overflow-hidden z-10 relative"
+                        variants={{
+                            hover: { scale: 1.1, borderColor: "#ffe066" }
+                        }}
+                    >
                         <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
-                    </div>
-                </div>
+                    </motion.div>
+                </motion.div>
             )}
 
             {rightItems.map((item) => (
@@ -143,5 +207,17 @@ export function Navbar() {
         </div>
       </motion.nav>
     </div>
+
+    {user && (
+        <>
+            <AccessCardModal 
+                isOpen={showAccessCard} 
+                onClose={() => setShowAccessCard(false)} 
+                user={user} 
+            />
+            <AchievementWatcher />
+        </>
+    )}
+    </>
   );
 }

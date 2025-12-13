@@ -156,6 +156,9 @@ export default function StoryEditor({ filePath, projectId, onBack }: StoryEditor
     return () => clearTimeout(timer);
   }, [showPlotPreview, previewMode, viewMode, nodes, edges, variables, scriptContent, filePath]);
 
+  const { fitView, setCenter, screenToFlowPosition } = useReactFlow();
+  const reactFlowWrapper = useRef<HTMLDivElement>(null);
+
   const switchToScriptMode = useCallback(() => {
     const script = nodesToScript(nodes, edges);
     setScriptContent(script);
@@ -492,7 +495,29 @@ export default function StoryEditor({ filePath, projectId, onBack }: StoryEditor
 
   const handleAddNode = useCallback((type: NodeType = 'dialogue') => {
     const id = uuidv4();
-    const position = { x: Math.random() * 500, y: Math.random() * 500 };
+    let position = { x: 0, y: 0 };
+
+    // Smart positioning logic
+    if (selectedNodeId) {
+        const selectedNode = nodes.find(n => n.id === selectedNodeId);
+        if (selectedNode) {
+            // Place near selected node
+            position = { 
+                x: selectedNode.position.x + 350, 
+                y: selectedNode.position.y 
+            };
+        }
+    } else if (reactFlowWrapper.current) {
+        // Place in center of view
+        const { top, left, width, height } = reactFlowWrapper.current.getBoundingClientRect();
+        position = screenToFlowPosition({
+            x: left + width / 2,
+            y: top + height / 2,
+        });
+    } else {
+        // Fallback
+        position = { x: Math.random() * 500, y: Math.random() * 500 };
+    }
 
     const newNode: Node = {
       id,
@@ -558,9 +583,18 @@ export default function StoryEditor({ filePath, projectId, onBack }: StoryEditor
     setNodes((nds) => nds.concat(newNodes));
     if (newEdges.length > 0) {
         setEdges((eds) => eds.concat(newEdges));
+    } else if (selectedNodeId) {
+        // Auto-connect if created from selection
+        const newEdge: Edge = {
+            id: `e${selectedNodeId}-${id}`,
+            source: selectedNodeId,
+            target: id,
+            type: 'default'
+        };
+        setEdges((eds) => eds.concat(newEdge));
     }
     setShowAddMenu(false);
-  }, [setNodes, setEdges]);
+  }, [setNodes, setEdges, selectedNodeId, nodes, screenToFlowPosition]);
 
   const handleUpdateNode = useCallback((id: string, data: StoryNodeData) => {
     setNodes((nds) =>
@@ -744,8 +778,6 @@ export default function StoryEditor({ filePath, projectId, onBack }: StoryEditor
         handleUpdateNode(selectedNodeId, { content } as Partial<StoryNodeData> as any);
     }
   }, [selectedNodeId, handleUpdateNode]);
-
-  const { fitView, setCenter } = useReactFlow();
 
   const handleTreeCallback = useCallback((nodeId: string) => {
     setSelectedNodeId(nodeId);
@@ -1000,6 +1032,7 @@ export default function StoryEditor({ filePath, projectId, onBack }: StoryEditor
       <div 
         className="relative transition-all duration-300 ease-in-out h-full border-r border-slate-200" 
         style={{ width: isRichEditorVisible ? `${splitRatio}%` : '100%' }}
+        ref={reactFlowWrapper}
       >
         <ReactFlow
             nodes={nodes}
@@ -1011,6 +1044,8 @@ export default function StoryEditor({ filePath, projectId, onBack }: StoryEditor
             onPaneClick={onPaneClick}
             nodeTypes={nodeTypes}
             fitView
+            panOnScroll
+            selectionOnDrag
             className="bg-slate-50"
         >
             <Background gap={20} color="#e2e8f0" />

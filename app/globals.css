@@ -31,8 +31,8 @@
   --color-end-text-sub: var(--end-text-sub);
   --color-end-text-dim: var(--end-text-dim);
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-maple);
+  --font-mono: var(--font-maple);
   
   --animate-scan: scan 4s linear infinite;
   --animate-blink: blink 1s step-end infinite;

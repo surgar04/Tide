@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBook, faSearch, faHashtag, faGlobe, faUsers, faClock, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { PageHeader } from "@/components/ui/PageHeader";
 import WikiDetail from "./components/WikiDetail";
 import WikiEditor from "./components/WikiEditor";
 import { WikiEntry } from "./types";
@@ -81,22 +82,10 @@ export default function WikiPage() {
       </AnimatePresence>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-12">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-end justify-between border-b border-[var(--end-border)] pb-6"
-          >
-            <div>
-              <h1 className="text-4xl font-bold text-[var(--end-text-main)] mb-2 tracking-tight">
-                百科资料库
-              </h1>
-              <p className="text-[var(--end-text-sub)] font-mono text-sm tracking-widest">
-                游戏百科资料库 // KNOWLEDGE BASE
-              </p>
-            </div>
-            
-            {/* Search Bar Placeholder */}
+        <PageHeader 
+          title="百科资料库" 
+          description="游戏百科资料库 [KNOWLEDGE BASE]"
+        >
             <div className="flex gap-4">
                 <button 
                     onClick={() => setIsEditing(true)}
@@ -106,17 +95,16 @@ export default function WikiPage() {
                     建设 Wiki
                 </button>
                 <div className="relative group w-64">
-                <input 
-                    type="text" 
-                    placeholder="搜索..." 
-                    className="w-full bg-black/20 border border-[var(--end-border)] text-[var(--end-text-main)] px-4 py-2 text-sm font-mono focus:outline-none focus:border-[var(--end-yellow)] transition-colors"
-                    disabled
-                />
-                <FontAwesomeIcon icon={faSearch} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--end-text-dim)]" />
+                    <input 
+                        type="text" 
+                        placeholder="搜索..." 
+                        className="w-full bg-black/20 border border-[var(--end-border)] text-[var(--end-text-main)] px-4 py-2 text-sm font-mono focus:outline-none focus:border-[var(--end-yellow)] transition-colors"
+                        disabled
+                    />
+                    <FontAwesomeIcon icon={faSearch} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--end-text-dim)]" />
                 </div>
             </div>
-          </motion.div>
-        </div>
+        </PageHeader>
 
         <div className="grid grid-cols-12 gap-8">
           {/* Sidebar */}

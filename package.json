@@ -5,8 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:tauri": "cross-env NEXT_PUBLIC_TAURI_EXPORT=true next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "tauri": "tauri"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.1.0",
@@ -15,15 +17,17 @@
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.4.2",
     "@tailwindcss/typography": "^0.5.19",
+    "@tiptap/core": "^2.1.13",
     "@tiptap/extension-placeholder": "^2.1.13",
+    "@tiptap/pm": "^2.1.13",
     "@tiptap/react": "^2.1.13",
     "@tiptap/starter-kit": "^2.1.13",
-    "@tiptap/core": "^2.1.13",
-    "@tiptap/pm": "^2.1.13",
+    "@types/adm-zip": "^0.5.7",
     "@types/js-cookie": "^3.0.6",
     "@types/three": "^0.182.0",
     "@types/uuid": "^11.0.0",
     "@xyflow/react": "^12.10.0",
+    "adm-zip": "^0.5.16",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.25",
     "gsap": "3.14.1",
@@ -46,9 +50,11 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@tauri-apps/cli": "^2.9.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.0.8",
     "tailwindcss": "^4",

@@ -17,6 +17,9 @@ import {
   faBook
 } from "@fortawesome/free-solid-svg-icons";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { WelcomeModal } from "@/components/ui/WelcomeModal";
+import Cookies from 'js-cookie';
 
 const features = [
   {
@@ -62,8 +65,39 @@ const features = [
 ];
 
 export default function Home() {
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [latency, setLatency] = useState<number | null>(null);
+
+  useEffect(() => {
+    // Check if user has visited before using cookie
+    const hasVisited = Cookies.get('tideoa_has_visited');
+    if (!hasVisited) {
+      setShowWelcome(true);
+      // Set cookie to expire in 365 days
+      Cookies.set('tideoa_has_visited', 'true', { expires: 365 });
+    }
+  }, []);
+
+  useEffect(() => {
+    const measureLatency = async () => {
+      const start = Date.now();
+      try {
+        await fetch('/', { method: 'HEAD', cache: 'no-store' });
+        const end = Date.now();
+        setLatency(end - start);
+      } catch (e) {
+        setLatency(null);
+      }
+    };
+
+    measureLatency();
+    const interval = setInterval(measureLatency, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="flex flex-col items-center min-h-[80vh] justify-center relative">
+      <WelcomeModal isOpen={showWelcome} onClose={() => setShowWelcome(false)} />
       
       {/* Decorative Background Elements for Home */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden z-[-1]">
@@ -127,7 +161,7 @@ export default function Home() {
                     <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                     <span>SERVER STATUS: NORMAL</span>
                     <span className="mx-2">|</span>
-                    <span>LATENCY: 12ms</span>
+                    <span>LATENCY: {latency !== null ? `${latency}ms` : '---'}</span>
                 </div>
            </div>
         </motion.div>

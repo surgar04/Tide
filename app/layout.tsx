@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { ThreeMapBackground } from "@/components/ui/ThreeMapBackground";
@@ -7,14 +7,10 @@ import { TimeTracker } from "@/components/TimeTracker";
 import { I18nProvider } from "@/lib/i18n";
 import { AuthProvider } from "@/lib/auth/context";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const mapleMono = localFont({
+  src: "../public/MapleMono-Light.ttf",
+  variable: "--font-maple",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -30,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[var(--end-bg)] text-[var(--end-text-main)] min-h-screen selection:bg-[var(--end-yellow)] selection:text-black overflow-x-hidden`}
+        className={`${mapleMono.variable} antialiased bg-[var(--end-bg)] text-[var(--end-text-main)] min-h-screen selection:bg-[var(--end-yellow)] selection:text-black overflow-x-hidden font-sans text-lg`}
       >
         <AuthProvider>
           <I18nProvider>

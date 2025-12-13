@@ -7,11 +7,13 @@ import { Hierarchy } from "./components/Hierarchy";
 import { Inspector } from "./components/Inspector";
 import { AssetBrowser } from "./components/AssetBrowser";
 import { ProjectManager } from "./components/ProjectManager";
+import { MapEditor2D } from "./components/MapEditor2D";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMap, faSave, faCog, faUndo, faRedo } from "@fortawesome/free-solid-svg-icons";
+import { faMap, faSave, faCog, faUndo, faRedo, faCube, faLayerGroup } from "@fortawesome/free-solid-svg-icons";
 import { useEditor } from "@/lib/map/context";
+import { useState } from "react";
 
-function MapEditor() {
+function MapEditor3D() {
   const { undo, redo, canUndo, canRedo } = useEditor();
   
   return (
@@ -20,10 +22,10 @@ function MapEditor() {
       <div className="flex items-center justify-between bg-[var(--end-surface)] border border-[var(--end-border)] p-3 rounded-lg">
           <div className="flex items-center gap-3">
              <div className="w-8 h-8 flex items-center justify-center bg-[var(--end-yellow)]/10 text-[var(--end-yellow)] border border-[var(--end-yellow)] rounded">
-                <FontAwesomeIcon icon={faMap} />
+                <FontAwesomeIcon icon={faCube} />
              </div>
              <div>
-                 <h1 className="text-lg font-bold text-[var(--end-text-main)] leading-none">地图锻造台</h1>
+                 <h1 className="text-lg font-bold text-[var(--end-text-main)] leading-none">3D 场景编辑器</h1>
                  <span className="text-[10px] text-[var(--end-text-sub)] font-mono tracking-widest">LEVEL EDITOR V1.0</span>
              </div>
           </div>
@@ -102,9 +104,43 @@ function MapEditor() {
 }
 
 export default function MapPage() {
+  const [mode, setMode] = useState<'3D' | '2D'>('3D');
+
   return (
-    <EditorProvider>
-      <MapEditor />
-    </EditorProvider>
+    <div className="h-full flex flex-col gap-4">
+        {/* Mode Tabs */}
+        <div className="flex bg-[var(--end-surface)] w-fit rounded-lg border border-[var(--end-border)] p-1">
+            <button
+                onClick={() => setMode('3D')}
+                className={`flex items-center gap-2 px-6 py-2 rounded text-xs font-bold transition-all uppercase tracking-wider ${
+                    mode === '3D' 
+                    ? 'bg-[var(--end-yellow)] text-black shadow-lg' 
+                    : 'text-[var(--end-text-sub)] hover:text-[var(--end-text-main)] hover:bg-white/5'
+                }`}
+            >
+                <FontAwesomeIcon icon={faCube} />
+                3D 场景
+            </button>
+            <button
+                onClick={() => setMode('2D')}
+                className={`flex items-center gap-2 px-6 py-2 rounded text-xs font-bold transition-all uppercase tracking-wider ${
+                    mode === '2D' 
+                    ? 'bg-[var(--end-yellow)] text-black shadow-lg' 
+                    : 'text-[var(--end-text-sub)] hover:text-[var(--end-text-main)] hover:bg-white/5'
+                }`}
+            >
+                <FontAwesomeIcon icon={faLayerGroup} />
+                2D 地图
+            </button>
+        </div>
+
+        {mode === '3D' ? (
+            <EditorProvider>
+                <MapEditor3D />
+            </EditorProvider>
+        ) : (
+            <MapEditor2D />
+        )}
+    </div>
   );
 }

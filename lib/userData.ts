@@ -11,9 +11,12 @@ export interface Activity {
 }
 
 export interface UserData {
+  username?: string;
+  email?: string;
   joinDate: string | null;
   totalTime: number; // in seconds
   avatar: string | null; // base64
+  signature?: string;
   activities: Activity[];
 }
 
@@ -21,9 +24,12 @@ export function getUserData(): UserData {
   try {
     if (!fs.existsSync(DATA_FILE_PATH)) {
        const initialData: UserData = {
+         username: "Administrator",
+         email: "admin@tideoa.com",
          joinDate: new Date().toISOString(), // First access sets join date
          totalTime: 0,
          avatar: null,
+         signature: "Per aspera ad astra.",
          activities: []
        };
        saveUserData(initialData);
@@ -33,7 +39,7 @@ export function getUserData(): UserData {
     return JSON.parse(data);
   } catch (error) {
     console.error("Error reading user data:", error);
-    return { joinDate: null, totalTime: 0, avatar: null, activities: [] };
+    return { username: "Administrator", email: "admin@tideoa.com", joinDate: null, totalTime: 0, avatar: null, signature: "System User", activities: [] };
   }
 }
 

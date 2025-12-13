@@ -3,10 +3,14 @@
 "use client";
 
 import { PageHeader } from "@/components/ui/PageHeader";
-import { faUser, faIdCard, faLayerGroup, faClock, faCheckCircle, faTerminal, faShieldHalved, faUpload } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faIdCard, faLayerGroup, faClock, faCheckCircle, faTerminal, faShieldHalved, faUpload, faPen, faShareNodes, faSave, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { motion } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
+import { useAuth } from "@/lib/auth/context";
+import { calculateLevel, getLevelProgress } from "@/lib/levelUtils";
+import { AchievementsSection } from "./components/AchievementsSection";
+import { ShareCardModal } from "@/components/ui/ShareCardModal";
 
 interface Activity {
   id: string;
@@ -16,23 +20,39 @@ interface Activity {
 }
 
 interface UserData {
+  username?: string;
+  email?: string;
   joinDate: string | null;
   totalTime: number;
   avatar: string | null;
+  signature?: string;
 }
 
 export default function ProfilePage() {
+  const { user, updateProfile } = useAuth();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [uploadCount, setUploadCount] = useState(0);
   const [projectCount, setProjectCount] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Signature & Share
+  const [isEditingSignature, setIsEditingSignature] = useState(false);
+  const [signatureInput, setSignatureInput] = useState("");
+  const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
     // Fetch User Data
     fetch("/api/user")
       .then(res => res.json())
-      .then(data => setUserData(data))
+      .then(data => {
+        setUserData(data);
+        setSignatureInput(data.signature || "");
+        // Sync API data with Auth Context if Auth Context is missing something or vice versa?
+        // Actually, let's prioritize the API data for display if available, but AuthContext is for session.
+        // If they differ significantly, we might want to sync them. 
+        // For now, let's just use API data for the page content.
+      })
       .catch(console.error);
 
     // Fetch Activities
@@ -40,15 +60,13 @@ export default function ProfilePage() {
       .then(res => res.json())
       .then(data => setActivities(data.activities))
       .catch(console.error);
-
-    // Fetch GitHub Resources for stats
+    
+    // ... stats fetching ...
     fetch("/api/github/resources?type=all")
       .then(res => res.json())
       .then(data => {
          if (data.resources) {
             setUploadCount(data.resources.length);
-            // Count unique projects based on path logic or just use separate call
-            // For now, let's call projects type
             fetch("/api/github/resources?type=projects")
               .then(res2 => res2.json())
               .then(data2 => {
@@ -66,9 +84,14 @@ export default function ProfilePage() {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64 = reader.result as string;
-        // Optimistic update
+        
+        // Optimistic update for local state
         setUserData(prev => prev ? { ...prev, avatar: base64 } : null);
         
+        // Update Auth Context (Session/LocalStorage)
+        updateProfile({ avatar: base64 });
+        
+        // Update Server/API
         fetch("/api/user", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -105,13 +128,46 @@ export default function ProfilePage() {
   ];
 
   const skills = [
-    "LEVEL_5_ACCESS", "SYSTEM_ADMIN", "TACTICAL_COMMAND", "RESOURCE_MGMT", "ARCHIVE_EDITOR"
+    `LEVEL_${userData ? calculateLevel(userData.totalTime) : 1}_ACCESS`, 
+    "SYSTEM_ADMIN", 
+    "TACTICAL_COMMAND", 
+    "RESOURCE_MGMT", 
+    "ARCHIVE_EDITOR"
   ];
 
   if (!userData) return null; // Or loading spinner
 
+  const currentLevel = calculateLevel(userData.totalTime);
+  const progress = getLevelProgress(userData.totalTime);
+
+  const handleUpdateSignature = (newSignature: string) => {
+      setUserData(prev => prev ? { ...prev, signature: newSignature } : null);
+      setSignatureInput(newSignature);
+  };
+
+  const saveSignature = async () => {
+      try {
+          await fetch("/api/user", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ type: "update_signature", signature: signatureInput }),
+          });
+          handleUpdateSignature(signatureInput);
+          setIsEditingSignature(false);
+      } catch (error) {
+          console.error(error);
+      }
+  };
+
   return (
     <div className="space-y-8 pb-12">
+      <ShareCardModal 
+          isOpen={showShareModal} 
+          onClose={() => setShowShareModal(false)} 
+          userData={userData} 
+          stats={{ uploads: uploadCount, projects: projectCount }}
+          onUpdateSignature={handleUpdateSignature}
+      />
       <PageHeader title="个人主页 | PROFILE" description="查看个人信息与成就" />
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -120,76 +176,130 @@ export default function ProfilePage() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, ease: "circOut" }}
-          className="col-span-1"
+          className="lg:col-span-1 space-y-6"
         >
-          <div className="end-card p-6 h-full flex flex-col items-center text-center space-y-6">
-            <div className="end-corner-tl" />
-            <div className="end-corner-br" />
-            
-            <div className="relative w-32 h-32 mt-4 group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                className="hidden" 
-                accept="image/*"
-                onChange={handleAvatarUpload}
-              />
-              <div className="absolute inset-0 border-2 border-[var(--end-yellow)] rounded-full animate-[spin_10s_linear_infinite] opacity-50 border-dashed pointer-events-none" />
-              <div className="absolute inset-2 bg-[var(--end-surface-hover)] rounded-full flex items-center justify-center border border-[var(--end-border)] overflow-hidden">
-                 {userData.avatar ? (
-                   <img src={userData.avatar} alt="Avatar" className="w-full h-full object-cover" />
-                 ) : (
-                   <FontAwesomeIcon icon={faUser} className="text-5xl text-[var(--end-text-dim)]" />
-                 )}
-              </div>
+          {/* ID Card */}
+          <div className="bg-[var(--end-surface)] border border-[var(--end-border)] rounded-lg overflow-hidden relative group">
+              <div className="absolute top-0 left-0 w-full h-1 bg-[var(--end-yellow)]" />
               
-              {/* Overlay for upload hint */}
-              <div className="absolute inset-2 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <FontAwesomeIcon icon={faUpload} className="text-[var(--end-yellow)]" />
-              </div>
+              <div className="p-8 flex flex-col items-center text-center">
+                  <div className="w-32 h-32 rounded-full border-2 border-[var(--end-yellow)] p-1 mb-4 relative cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                      <div className="w-full h-full rounded-full overflow-hidden bg-black relative">
+                          {userData.avatar ? (
+                             <img src={userData.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                          ) : (
+                             <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-[var(--end-yellow)]">
+                                {(userData.username?.[0] || "A").toUpperCase()}
+                             </div>
+                          )}
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                              <span className="text-xs text-white">Change</span>
+                          </div>
+                      </div>
+                      <div className="absolute bottom-0 right-0 w-8 h-8 bg-[var(--end-surface)] border border-[var(--end-yellow)] rounded-full flex items-center justify-center text-[var(--end-yellow)] text-xs">
+                         {currentLevel}
+                      </div>
+                  </div>
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    className="hidden" 
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                  />
 
-              <div className="absolute bottom-0 right-0 w-8 h-8 bg-[var(--end-yellow)] rounded-full flex items-center justify-center border-2 border-[var(--end-surface)] z-10 pointer-events-none">
-                 <div className="w-3 h-3 bg-white rounded-full animate-pulse" />
-              </div>
-            </div>
+                  <h2 className="text-2xl font-bold text-[var(--end-text-main)] mb-1">{userData.username}</h2>
+                  <p className="text-sm text-[var(--end-text-dim)] font-mono mb-4">{userData.email}</p>
+                  
+                  <div className="flex items-center gap-2 text-[var(--end-yellow)] bg-[var(--end-yellow)]/10 px-3 py-1 rounded border border-[var(--end-yellow)]/20">
+                      <FontAwesomeIcon icon={faShieldHalved} />
+                      <span className="text-xs font-bold tracking-widest">LEVEL {currentLevel} OPERATOR</span>
+                  </div>
 
-            <div className="space-y-2">
-              <h2 className="text-2xl font-bold tracking-tight text-[var(--end-text-main)]">管理员 | ADMINISTRATOR</h2>
-              <p className="text-[var(--end-text-sub)] font-mono text-sm">ID: END-001</p>
-              <div className="inline-flex items-center px-3 py-1 bg-[var(--end-yellow)]/10 text-[var(--end-yellow)] border border-[var(--end-yellow)]/30 rounded text-xs font-bold tracking-wider">
-                <FontAwesomeIcon icon={faShieldHalved} className="mr-2" />
-                权限等级 5
-              </div>
-            </div>
+                  {/* Signature Section */}
+                  <div className="w-full mt-6 mb-2 px-4">
+                      {isEditingSignature ? (
+                          <div className="flex items-center gap-2">
+                              <input 
+                                  type="text" 
+                                  value={signatureInput}
+                                  onChange={(e) => setSignatureInput(e.target.value)}
+                                  className="flex-1 bg-black/20 border-b border-[var(--end-yellow)] text-center text-sm font-mono text-[var(--end-text-main)] focus:outline-none py-1"
+                                  autoFocus
+                                  placeholder="Set signature..."
+                                  maxLength={50}
+                              />
+                              <button 
+                                  onClick={saveSignature}
+                                  className="text-[var(--end-yellow)] hover:text-white transition-colors"
+                              >
+                                  <FontAwesomeIcon icon={faCheckCircle} />
+                              </button>
+                          </div>
+                      ) : (
+                          <div className="relative group min-h-[24px] flex items-center justify-center">
+                              <p className="text-sm text-[var(--end-text-dim)] font-mono italic px-6 break-all">
+                                  "{userData.signature || "No signature set"}"
+                              </p>
+                              <button 
+                                  onClick={() => setIsEditingSignature(true)}
+                                  className="absolute right-0 top-1/2 -translate-y-1/2 text-[var(--end-text-dim)] opacity-0 group-hover:opacity-100 hover:text-[var(--end-yellow)] transition-all"
+                              >
+                                  <FontAwesomeIcon icon={faPen} className="text-xs" />
+                              </button>
+                          </div>
+                      )}
+                  </div>
 
-            <div className="w-full h-px bg-[var(--end-border)]" />
+                  {/* Share Button */}
+                  <button 
+                      onClick={() => setShowShareModal(true)}
+                      className="mt-2 text-xs text-[var(--end-yellow)] hover:text-white border border-[var(--end-yellow)]/30 hover:border-[var(--end-yellow)] px-4 py-1.5 rounded-full transition-all flex items-center gap-2"
+                  >
+                      <FontAwesomeIcon icon={faShareNodes} />
+                      SHARE CARD
+                  </button>
 
-            <div className="w-full space-y-4 text-left">
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-[var(--end-text-dim)]">所属部门 | Department</span>
-                <span className="font-medium text-[var(--end-text-main)]">开发部 | Development</span>
+                  {/* Level Progress */}
+                  <div className="w-full mt-6 space-y-2">
+                      <div className="flex justify-between text-[10px] text-[var(--end-text-dim)] font-mono uppercase">
+                          <span>Progress to Level {currentLevel + 1}</span>
+                          <span>{Math.floor(progress.percentage)}%</span>
+                      </div>
+                      <div className="w-full h-1.5 bg-[var(--end-surface-hover)] rounded-full overflow-hidden">
+                          <div 
+                             className="h-full bg-[var(--end-yellow)] transition-all duration-1000"
+                             style={{ width: `${progress.percentage}%` }} 
+                          />
+                      </div>
+                      <div className="text-[10px] text-[var(--end-text-dim)] text-right font-mono">
+                          {progress.remaining > 0 ? `${formatTime(progress.remaining)} remaining` : 'MAX LEVEL'}
+                      </div>
+                  </div>
               </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-[var(--end-text-dim)]">入职日期 | Join Date</span>
-                <span className="font-medium text-[var(--end-text-main)]">
-                  {userData.joinDate ? formatDate(userData.joinDate) : '-'}
-                </span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-[var(--end-text-dim)]">所属区域 | Region</span>
-                <span className="font-medium text-[var(--end-text-main)]">潮汐中枢 | Tide Hub</span>
-              </div>
-            </div>
-            
-            <div className="flex-1" />
-            
-            <button 
-              onClick={() => fileInputRef.current?.click()}
-              className="w-full py-3 bg-[var(--end-text-main)] text-[var(--end-surface)] font-bold text-sm tracking-widest hover:bg-[var(--end-yellow)] hover:text-black transition-colors clip-path-button"
-            >
-              更换头像 | CHANGE AVATAR
-            </button>
           </div>
+
+          {/* Skills/Tags (Moved to Left Column) */}
+          <motion.div
+             initial={{ opacity: 0, y: 20 }}
+             animate={{ opacity: 1, y: 0 }}
+             transition={{ duration: 0.5, delay: 0.2 }}
+             className="bg-[var(--end-surface)] border border-[var(--end-border)] rounded-lg p-6 relative overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 p-2 opacity-20">
+                <FontAwesomeIcon icon={faShieldHalved} className="text-4xl text-[var(--end-text-dim)]" />
+            </div>
+            <h3 className="text-sm font-bold text-[var(--end-text-sub)] uppercase tracking-wider mb-4 border-b border-[var(--end-border)] pb-2">
+                访问权限 | ACCESS PRIVILEGES
+            </h3>
+            <div className="flex flex-wrap gap-2 relative z-10">
+              {skills.map(skill => (
+                <span key={skill} className="px-3 py-1 bg-[var(--end-surface-hover)] border border-[var(--end-border)] text-[var(--end-text-sub)] text-xs font-mono hover:border-[var(--end-yellow)] hover:text-[var(--end-text-main)] cursor-default transition-colors">
+                  #{skill}
+                </span>
+              ))}
+            </div>
+          </motion.div>
         </motion.div>
 
         {/* Right Column: Content */}
@@ -214,6 +324,13 @@ export default function ProfilePage() {
               </motion.div>
             ))}
           </div>
+
+          {/* Achievements Section */}
+          <AchievementsSection 
+              userData={userData} 
+              uploadCount={uploadCount} 
+              projectCount={projectCount} 
+          />
 
           {/* Activity Log */}
           <motion.div
@@ -248,23 +365,6 @@ export default function ProfilePage() {
                  ))
                )}
              </div>
-          </motion.div>
-
-          {/* Skills/Tags */}
-          <motion.div
-             initial={{ opacity: 0, y: 20 }}
-             animate={{ opacity: 1, y: 0 }}
-             transition={{ duration: 0.5, delay: 0.4 }}
-             className="space-y-3"
-          >
-            <h3 className="text-sm font-bold text-[var(--end-text-sub)] uppercase tracking-wider">访问权限 | ACCESS PRIVILEGES</h3>
-            <div className="flex flex-wrap gap-2">
-              {skills.map(skill => (
-                <span key={skill} className="px-3 py-1 bg-[var(--end-surface-hover)] border border-[var(--end-border)] text-[var(--end-text-sub)] text-xs font-mono hover:border-[var(--end-yellow)] hover:text-[var(--end-text-main)] cursor-default transition-colors">
-                  #{skill}
-                </span>
-              ))}
-            </div>
           </motion.div>
 
         </div>
