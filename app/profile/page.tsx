@@ -112,7 +112,7 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-8 pb-12">
-      <PageHeader title="个人主页 | PROFILE" description="查看个人信息与成就 | View personal information and achievements" />
+      <PageHeader title="个人主页 | PROFILE" description="查看个人信息与成就" />
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column: User Card */}
@@ -158,7 +158,7 @@ export default function ProfilePage() {
               <p className="text-[var(--end-text-sub)] font-mono text-sm">ID: END-001</p>
               <div className="inline-flex items-center px-3 py-1 bg-[var(--end-yellow)]/10 text-[var(--end-yellow)] border border-[var(--end-yellow)]/30 rounded text-xs font-bold tracking-wider">
                 <FontAwesomeIcon icon={faShieldHalved} className="mr-2" />
-                CLEARANCE LEVEL 5
+                权限等级 5
               </div>
             </div>
 
@@ -167,7 +167,7 @@ export default function ProfilePage() {
             <div className="w-full space-y-4 text-left">
               <div className="flex justify-between items-center text-sm">
                 <span className="text-[var(--end-text-dim)]">所属部门 | Department</span>
-                <span className="font-medium text-[var(--end-text-main)]">开发 | Development</span>
+                <span className="font-medium text-[var(--end-text-main)]">开发部 | Development</span>
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-[var(--end-text-dim)]">入职日期 | Join Date</span>

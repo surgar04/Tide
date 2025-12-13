@@ -101,11 +101,11 @@ export default function LoginPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-[var(--end-text-main)] mb-2 uppercase tracking-widest">
-            System Login
+            系统登录
           </h1>
           <div className="h-[1px] w-24 bg-[var(--end-yellow)] mx-auto mb-4"></div>
           <p className="text-[var(--end-text-sub)] text-sm font-mono">
-            SECURE TERMINAL ACCESS
+            安全终端访问
           </p>
         </div>
 
@@ -136,7 +136,7 @@ export default function LoginPage() {
                 ) : (
                   <div className="text-center p-2">
                     <FontAwesomeIcon icon={faImage} className="text-2xl text-slate-500 mb-1 block mx-auto" />
-                    <span className="text-[10px] text-slate-500 uppercase font-bold">Upload ID</span>
+                    <span className="text-[10px] text-slate-500 uppercase font-bold">上传 ID</span>
                   </div>
                 )}
               </div>
@@ -157,7 +157,7 @@ export default function LoginPage() {
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="OPERATOR NAME"
+                  placeholder="干员代号"
                   className="w-full bg-black/20 border border-slate-700 rounded-lg py-3 pl-12 pr-4 text-white placeholder-slate-600 focus:outline-none focus:border-[var(--end-yellow)] transition-colors font-mono text-sm"
                 />
               </div>
@@ -168,7 +168,7 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="EMAIL ADDRESS"
+                  placeholder="电子邮箱"
                   className="w-full bg-black/20 border border-slate-700 rounded-lg py-3 pl-12 pr-4 text-white placeholder-slate-600 focus:outline-none focus:border-[var(--end-yellow)] transition-colors font-mono text-sm"
                 />
               </div>
@@ -179,7 +179,7 @@ export default function LoginPage() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="ACCESS CODE"
+                  placeholder="访问密钥"
                   className="w-full bg-black/20 border border-slate-700 rounded-lg py-3 pl-12 pr-4 text-white placeholder-slate-600 focus:outline-none focus:border-[var(--end-yellow)] transition-colors font-mono text-sm"
                 />
               </div>
@@ -194,11 +194,11 @@ export default function LoginPage() {
               {isSubmitting ? (
                 <>
                   <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
-                  AUTHENTICATING...
+                  验证中...
                 </>
               ) : (
                 <>
-                  INITIALIZE
+                  初始化系统
                   <FontAwesomeIcon icon={faArrowRight} />
                 </>
               )}
@@ -210,7 +210,7 @@ export default function LoginPage() {
         {/* Footer */}
         <div className="text-center mt-8 text-[10px] text-slate-600 font-mono">
           <div>TIDE OA SYSTEM v2.0.4</div>
-          <div>ENCRYPTED LOCAL STORAGE ENABLED</div>
+          <div>已启用本地加密存储</div>
         </div>
       </motion.div>
     </div>

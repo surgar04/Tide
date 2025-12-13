@@ -15,10 +15,10 @@ export default function SettingsPage() {
   const { t } = useI18n();
 
   const SECTIONS = [
-    { id: "general", label: t("settings.general"), icon: faGear, description: t("settings.description") },
-    { id: "display", label: t("settings.display"), icon: faDesktop, description: t("settings.description") },
-    { id: "account", label: t("settings.account"), icon: faUserShield, description: t("settings.description") },
-    { id: "about", label: t("settings.about"), icon: faCircleInfo, description: t("settings.description") },
+    { id: "general", label: t("settings.general"), icon: faGear, description: "语言与区域设置" },
+    { id: "display", label: t("settings.display"), icon: faDesktop, description: "主题与界面显示" },
+    { id: "account", label: t("settings.account"), icon: faUserShield, description: "用户账户安全" },
+    { id: "about", label: t("settings.about"), icon: faCircleInfo, description: "系统版本信息" },
   ];
 
   return (
@@ -108,7 +108,7 @@ function GeneralSettings() {
   return (
     <div className="space-y-6">
       <SettingGroup title={t("settings.general")}>
-        <SettingItem label={t("settings.language")} description="Select the primary language for the interface.">
+        <SettingItem label={t("settings.language")} description="选择系统界面的首选语言。">
            <select 
              value={locale}
              onChange={(e) => setLocale(e.target.value as any)}
@@ -118,7 +118,7 @@ function GeneralSettings() {
              <option value="zh-CN">简体中文</option>
            </select>
         </SettingItem>
-        <SettingItem label={t("settings.dateFormat")} description="Choose how dates are displayed.">
+        <SettingItem label={t("settings.dateFormat")} description="选择日期的显示格式。">
            <div className="flex gap-2">
              <div className="px-3 py-1 bg-[var(--end-yellow)] text-black text-xs font-bold rounded cursor-pointer">YYYY-MM-DD</div>
              <div className="px-3 py-1 bg-[var(--end-bg)] border border-[var(--end-border)] text-xs rounded cursor-pointer hover:border-[var(--end-text-dim)]">DD/MM/YYYY</div>
@@ -126,9 +126,9 @@ function GeneralSettings() {
         </SettingItem>
       </SettingGroup>
 
-      <SettingGroup title="System Preferences">
-        <SettingItem label={t("settings.debugMode")} description="Enable detailed logging and developer tools." isToggle />
-        <SettingItem label={t("settings.autoSave")} description="Automatically save changes in editors." isToggle defaultChecked />
+      <SettingGroup title="系统偏好">
+        <SettingItem label={t("settings.debugMode")} description="启用详细日志记录和开发者工具。" isToggle />
+        <SettingItem label={t("settings.autoSave")} description="在编辑器中自动保存更改。" isToggle defaultChecked />
       </SettingGroup>
     </div>
   );
@@ -139,7 +139,7 @@ function DisplaySettings() {
   return (
     <div className="space-y-6">
        <SettingGroup title={t("settings.display")}>
-         <SettingItem label={t("settings.uiDensity")} description="Adjust the spacing of interface elements.">
+         <SettingItem label={t("settings.uiDensity")} description="调整界面元素的间距密度。">
             <div className="grid grid-cols-2 gap-4 w-full max-w-md">
                <div className="border border-[var(--end-yellow)] bg-[var(--end-surface)] p-3 rounded cursor-pointer flex items-center justify-between">
                   <span className="text-sm font-bold">{t("settings.comfortable")}</span>
@@ -150,7 +150,7 @@ function DisplaySettings() {
                </div>
             </div>
          </SettingItem>
-         <SettingItem label={t("settings.reduceMotion")} description="Minimize animation effects." isToggle />
+         <SettingItem label={t("settings.reduceMotion")} description="减少界面动画效果。" isToggle />
        </SettingGroup>
        
        <SettingGroup title={t("settings.theme")}>
@@ -187,12 +187,12 @@ function AccountSettings() {
       </div>
 
       <SettingGroup title={t("settings.security")}>
-        <SettingItem label={t("settings.2fa")} description="Secure your account with 2FA." isToggle defaultChecked />
-        <SettingItem label={t("settings.sessionTimeout")} description="Auto-logout after inactivity.">
+        <SettingItem label={t("settings.2fa")} description="使用两步验证保护您的账户安全。" isToggle defaultChecked />
+        <SettingItem label={t("settings.sessionTimeout")} description="闲置一段时间后自动登出。">
            <select className="bg-[var(--end-bg)] border border-[var(--end-border)] p-2 rounded text-sm outline-none">
-             <option>15 Minutes</option>
-             <option>30 Minutes</option>
-             <option>1 Hour</option>
+             <option>15 分钟</option>
+             <option>30 分钟</option>
+             <option>1 小时</option>
            </select>
         </SettingItem>
       </SettingGroup>

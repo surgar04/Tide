@@ -44,7 +44,7 @@ export default function RolesPage() {
     <div className="space-y-8 h-full flex flex-col">
       <PageHeader 
         title="角色设计 | CHARACTER DESIGN" 
-        description="管理游戏角色、NPC数据、美术资源与属性配置 | Manage game characters, NPCs, assets and stats" 
+        description="管理游戏角色、NPC数据、美术资源与属性配置" 
       />
       
       <div className="flex-1 overflow-hidden">

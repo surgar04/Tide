@@ -2,7 +2,7 @@ export type CharacterType = 'Player' | 'NPC' | 'Monster';
 
 export interface CharacterAsset {
   id: string;
-  type: 'portrait' | 'view3' | 'model' | 'other';
+  type: 'portrait' | 'model' | 'texture' | 'other';
   url: string;
   name: string;
   file?: File; // For handling uploads before upload

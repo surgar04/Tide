@@ -38,8 +38,8 @@ export default function StoryPage() {
     <div className="space-y-6 h-[calc(100vh-100px)] flex flex-col">
       <div className="flex-none">
         <PageHeader 
-          title="剧情模式 | STORY MODE" 
-          description="非线性叙事编辑器 | Non-linear Narrative Editor [TWINE_COMPATIBLE]" 
+          title="剧情模式" 
+          description="非线性叙事编辑器 [兼容 TWINE]" 
         />
       </div>
       

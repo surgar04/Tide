@@ -323,7 +323,7 @@ export default function ResourcesPage() {
     <div className="space-y-6 relative min-h-screen text-[var(--end-text-main)]">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[var(--end-border)] pb-6">
-        <PageHeader title="资源数据库 | RESOURCE DATABASE" description="GitHub 集成资源管理系统" />
+        <PageHeader title="资源数据库" description="GitHub 集成资源管理系统" />
         
         <div className="flex items-center gap-3 mb-2">
             {/* Health Status */}
@@ -352,7 +352,7 @@ export default function ResourcesPage() {
                 style={{ clipPath: "polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%)" }}
             >
             <FontAwesomeIcon icon={faUpload} className="w-4 h-4" />
-            <span className="tracking-wider">上传资源 | UPLOAD</span>
+            <span className="tracking-wider">上传资源</span>
             </button>
         </div>
       </div>
@@ -376,7 +376,7 @@ export default function ResourcesPage() {
                 onChange={(e) => setSelectedProjectFilter(e.target.value)}
                 className="bg-white px-3 py-2 border border-[var(--end-border)] text-[var(--end-text-main)] text-sm outline-none focus:border-[var(--end-yellow)] font-mono cursor-pointer shadow-sm"
             >
-                <option value="全部项目">全部项目 | ALL PROJECTS</option>
+                <option value="全部项目">全部项目</option>
                 {projects.map(p => (
                     <option key={p} value={p}>{p}</option>
                 ))}
@@ -585,7 +585,7 @@ export default function ResourcesPage() {
 
       {filteredResources.length === 0 && !isLoading && (
         <div className="text-center py-20 text-[var(--end-text-sub)] font-mono">
-          <p>// 未找到资源 | NO RESOURCES FOUND //</p>
+          <p>// 未找到资源 //</p>
         </div>
       )}
       
@@ -616,18 +616,18 @@ export default function ResourcesPage() {
                     }}
                 >
                     <div className="p-6">
-                        <h2 className="text-xl font-bold mb-6 text-[var(--end-text-main)] uppercase border-l-4 border-[var(--end-yellow)] pl-3">上传资源 | Upload Resource</h2>
+                        <h2 className="text-xl font-bold mb-6 text-[var(--end-text-main)] uppercase border-l-4 border-[var(--end-yellow)] pl-3">上传资源</h2>
                         <form onSubmit={handleUpload} className="space-y-5">
                             {/* Project Select */}
                             <div className="space-y-1.5">
-                                <label className="text-[10px] text-[var(--end-text-sub)] uppercase tracking-wider">所属项目 | Target Project</label>
+                                <label className="text-[10px] text-[var(--end-text-sub)] uppercase tracking-wider">所属项目</label>
                                 <select 
                                     value={uploadProject}
                                     onChange={(e) => setUploadProject(e.target.value)}
                                     className="w-full bg-gray-50 border border-[var(--end-border)] px-3 py-2 text-sm text-[var(--end-text-main)] focus:border-[var(--end-yellow)] outline-none font-mono"
                                     required
                                 >
-                                    <option value="" disabled>选择项目 | SELECT PROJECT...</option>
+                                    <option value="" disabled>选择项目...</option>
                                     {projects.map(p => (
                                         <option key={p} value={p}>{p}</option>
                                     ))}
@@ -636,20 +636,20 @@ export default function ResourcesPage() {
 
                             {/* Uploader Name */}
                             <div className="space-y-1.5">
-                                <label className="text-[10px] text-[var(--end-text-sub)] uppercase tracking-wider">操作员 | Operator Name</label>
+                                <label className="text-[10px] text-[var(--end-text-sub)] uppercase tracking-wider">操作员</label>
                                 <input 
                                     type="text"
                                     value={uploaderName}
                                     onChange={(e) => setUploaderName(e.target.value)}
                                     className="w-full bg-gray-50 border border-[var(--end-border)] px-3 py-2 text-sm text-[var(--end-text-main)] focus:border-[var(--end-yellow)] outline-none font-mono"
-                                    placeholder="输入姓名 | ENTER NAME"
+                                    placeholder="输入姓名"
                                     required
                                 />
                             </div>
 
                              {/* Category */}
                              <div className="space-y-1.5">
-                                <label className="text-[10px] text-[var(--end-text-sub)] uppercase tracking-wider">分类 | Category</label>
+                                <label className="text-[10px] text-[var(--end-text-sub)] uppercase tracking-wider">分类</label>
                                 <select 
                                     value={uploadCategory}
                                     onChange={(e) => setUploadCategory(e.target.value)}
@@ -664,7 +664,7 @@ export default function ResourcesPage() {
 
                             {/* File Input */}
                             <div className="space-y-1.5">
-                                <label className="text-[10px] text-[var(--end-text-sub)] uppercase tracking-wider">文件资源 | File Asset</label>
+                                <label className="text-[10px] text-[var(--end-text-sub)] uppercase tracking-wider">文件资源</label>
                                 <div className="border border-dashed border-[var(--end-border)] p-6 text-center hover:border-[var(--end-yellow)] transition-colors cursor-pointer relative bg-gray-50">
                                     <input 
                                         type="file" 
@@ -679,7 +679,7 @@ export default function ResourcesPage() {
                                     ) : (
                                         <div className="text-[var(--end-text-sub)] text-sm">
                                             <FontAwesomeIcon icon={faUpload} className="mb-2 text-lg" />
-                                            <p className="font-mono text-xs">拖拽文件或点击 | DROP FILE OR CLICK</p>
+                                            <p className="font-mono text-xs">拖拽文件或点击</p>
                                         </div>
                                     )}
                                 </div>
@@ -692,7 +692,7 @@ export default function ResourcesPage() {
                                     className="flex-1 px-4 py-2 bg-transparent border border-[var(--end-border)] hover:bg-black/5 text-xs font-bold text-[var(--end-text-sub)] transition-colors uppercase"
                                     disabled={isUploading}
                                 >
-                                    取消 | Cancel
+                                    取消
                                 </button>
                                 <button 
                                     type="submit"
@@ -700,7 +700,7 @@ export default function ResourcesPage() {
                                     disabled={isUploading}
                                 >
                                     {isUploading && <FontAwesomeIcon icon={faRotate} className="animate-spin" />}
-                                    {isUploading ? "上传中... | Uploading..." : "确认上传 | Confirm Upload"}
+                                    {isUploading ? "上传中..." : "确认上传"}
                                 </button>
                             </div>
                         </form>

@@ -1,0 +1,12 @@
+D:\code\TideOA\tideoa\wasm\MapForge.Core\obj\Release\net10.0\browser-wasm\MapForge.Core.GeneratedMSBuildEditorConfig.editorconfig
+D:\code\TideOA\tideoa\wasm\MapForge.Core\obj\Release\net10.0\browser-wasm\MapForge.Core.AssemblyInfoInputs.cache
+D:\code\TideOA\tideoa\wasm\MapForge.Core\obj\Release\net10.0\browser-wasm\MapForge.Core.AssemblyInfo.cs
+D:\code\TideOA\tideoa\wasm\MapForge.Core\obj\Release\net10.0\browser-wasm\MapForge.Core.csproj.CoreCompileInputs.cache
+D:\code\TideOA\tideoa\wasm\MapForge.Core\obj\Release\net10.0\browser-wasm\MapForge.Core.sourcelink.json
+D:\code\TideOA\tideoa\wasm\MapForge.Core\bin\Release\net10.0\browser-wasm\MapForge.Core.deps.json
+D:\code\TideOA\tideoa\wasm\MapForge.Core\bin\Release\net10.0\browser-wasm\MapForge.Core.dll
+D:\code\TideOA\tideoa\wasm\MapForge.Core\bin\Release\net10.0\browser-wasm\MapForge.Core.pdb
+D:\code\TideOA\tideoa\wasm\MapForge.Core\obj\Release\net10.0\browser-wasm\MapForge.Core.dll
+D:\code\TideOA\tideoa\wasm\MapForge.Core\obj\Release\net10.0\browser-wasm\refint\MapForge.Core.dll
+D:\code\TideOA\tideoa\wasm\MapForge.Core\obj\Release\net10.0\browser-wasm\MapForge.Core.pdb
+D:\code\TideOA\tideoa\wasm\MapForge.Core\obj\Release\net10.0\browser-wasm\ref\MapForge.Core.dll

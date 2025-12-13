@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "McNrdt6wphk=",
+  "success": true,
+  "projectFilePath": "D:\\code\\TideOA\\tideoa\\wasm\\MapForge.Core\\MapForge.Core.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\w3525\\.nuget\\packages\\microsoft.net.illink.tasks\\10.0.1\\microsoft.net.illink.tasks.10.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}

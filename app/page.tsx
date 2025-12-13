@@ -23,7 +23,7 @@ const features = [
     id: "01",
     title: "RESOURCE_DB",
     label: "资源管理数据库",
-    description: "Asset management system with version control and real-time preview.",
+    description: "具备版本控制与实时预览功能的资产管理系统。",
     icon: faDatabase,
     href: "/resources",
   },
@@ -31,7 +31,7 @@ const features = [
     id: "02",
     title: "PERSONNEL",
     label: "人员档案与权限",
-    description: "Operator profiles, clearance levels, and relationship mapping.",
+    description: "管理角色档案、权限等级及人物关系图谱。",
     icon: faUserGroup,
     href: "/roles",
   },
@@ -39,7 +39,7 @@ const features = [
     id: "03",
     title: "GEO_SYSTEM",
     label: "地理信息系统",
-    description: "Tactical map editing with POI markers and fast-travel nodes.",
+    description: "包含兴趣点标记与快速旅行节点的战术地图编辑。",
     icon: faGlobe,
     href: "/map",
   },
@@ -47,7 +47,7 @@ const features = [
     id: "04",
     title: "ARCHIVES",
     label: "剧情与任务档案",
-    description: "Non-linear narrative flowcharts and mission objective tracking.",
+    description: "非线性叙事流程图与任务目标追踪系统。",
     icon: faFileContract,
     href: "/story",
   },
@@ -55,7 +55,7 @@ const features = [
     id: "05",
     title: "WIKI_BASE",
     label: "百科资料库",
-    description: "Comprehensive game knowledge base, terminology, and world setting.",
+    description: "综合游戏知识库、术语表及世界观设定。",
     icon: faBook,
     href: "/wiki",
   }
@@ -185,7 +185,7 @@ export default function Home() {
                   </p>
                   
                   <div className="flex items-center text-xs font-bold text-[var(--end-text-sub)] group-hover:text-[var(--end-text-main)] transition-colors gap-2 uppercase tracking-widest mt-auto">
-                    <span>Access Module</span>
+                    <span>进入模块</span>
                     <FontAwesomeIcon icon={faArrowRight} className="w-3 h-3 transform group-hover:translate-x-1 transition-transform text-[var(--end-yellow)]" />
                   </div>
                 </div>

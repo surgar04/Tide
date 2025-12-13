@@ -15,7 +15,8 @@ import {
   faGear,
   faTerminal,
   faSignOutAlt,
-  faBook
+  faBook,
+  faCloud
 } from "@fortawesome/free-solid-svg-icons";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth/context";
@@ -30,6 +31,7 @@ const navItems = [
 ];
 
 const rightItems = [
+  { name: "云控", href: "/cloud", icon: faCloud, label: "CLOUD" },
   { name: "通知", href: "/notifications", icon: faBell, label: "NOTIFICATIONS" },
   { name: "个人", href: "/profile", icon: faUser, label: "PROFILE" },
   { name: "系统", href: "/settings", icon: faGear, label: "SYSTEM" },
