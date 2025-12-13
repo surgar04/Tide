@@ -1,21 +1,24 @@
 import { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faSave, faPlus, faTrash, faUpload, faImage, faCube, faUser, faChartBar, faDna, faGamepad } from '@fortawesome/free-solid-svg-icons';
-import { GameCharacter, CharacterType, CharacterAsset } from '../types';
+import { GameCharacter, CharacterType, CharacterAsset, Faction } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { motion } from 'framer-motion';
 
 interface CharacterEditorProps {
   character?: GameCharacter;
+  factions: Faction[];
   onSave: (character: GameCharacter) => void;
   onClose: () => void;
+  onAddFaction: () => void;
 }
 
-export default function CharacterEditor({ character, onSave, onClose }: CharacterEditorProps) {
+export default function CharacterEditor({ character, factions, onSave, onClose, onAddFaction }: CharacterEditorProps) {
   const [formData, setFormData] = useState<GameCharacter>({
     id: character?.id || uuidv4(),
     name: character?.name || '',
     type: character?.type || 'Player',
+    faction: character?.faction || '',
     region: character?.region || '',
     description: character?.description || '',
     initialStats: character?.initialStats || {
@@ -172,7 +175,7 @@ export default function CharacterEditor({ character, onSave, onClose }: Characte
                             />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-3 gap-4">
                              <div className="space-y-2">
                                 <label className="text-[10px] font-bold text-[var(--end-text-dim)] uppercase tracking-widest">分类</label>
                                 <select 
@@ -184,6 +187,40 @@ export default function CharacterEditor({ character, onSave, onClose }: Characte
                                     <option value="NPC">NPC (NPC)</option>
                                     <option value="Monster">敌对单位 (HOSTILE)</option>
                                 </select>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-bold text-[var(--end-text-dim)] uppercase tracking-widest">所属势力</label>
+                                {factions.length > 0 ? (
+                                    <div className="flex gap-2">
+                                        <select 
+                                            value={formData.faction}
+                                            onChange={(e) => handleInputChange('faction', e.target.value)}
+                                            className="w-full px-4 py-2 bg-black/30 border border-[var(--end-border)] text-[var(--end-text-main)] focus:outline-none focus:border-[var(--end-yellow)] font-mono text-sm"
+                                        >
+                                            <option value="">-- 选择势力 --</option>
+                                            {factions.map(f => (
+                                                <option key={f.id} value={f.name}>{f.name}</option>
+                                            ))}
+                                        </select>
+                                        <button 
+                                            onClick={onAddFaction}
+                                            className="px-3 bg-[var(--end-surface-hover)] border border-[var(--end-border)] text-[var(--end-text-main)] hover:border-[var(--end-yellow)] hover:text-[var(--end-yellow)] transition-colors"
+                                            title="新建势力"
+                                        >
+                                            <FontAwesomeIcon icon={faPlus} />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-4 p-3 bg-black/30 border border-[var(--end-border)] border-dashed">
+                                        <span className="text-xs text-[var(--end-text-sub)]">暂无可用势力</span>
+                                        <button 
+                                            onClick={onAddFaction}
+                                            className="text-xs font-bold text-[var(--end-yellow)] hover:underline uppercase tracking-wider"
+                                        >
+                                            立即新建势力
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                             <div className="space-y-2">
                                 <label className="text-[10px] font-bold text-[var(--end-text-dim)] uppercase tracking-widest">区域 / 阵营</label>

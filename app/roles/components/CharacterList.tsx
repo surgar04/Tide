@@ -1,22 +1,26 @@
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faEdit, faTrash, faUser, faUserTag, faSearch, faCube, faImage, faDna, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
-import { GameCharacter } from '../types';
+import { faPlus, faEdit, faTrash, faUser, faUserTag, faSearch, faCube, faImage, faDna, faShieldHalved, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { GameCharacter, Faction } from '../types';
 import { motion } from 'framer-motion';
 
 interface CharacterListProps {
   characters: GameCharacter[];
+  factions: Faction[];
   onEdit: (character: GameCharacter) => void;
   onDelete: (id: string) => void;
   onAdd: () => void;
+  onAddFaction: () => void;
 }
 
-export default function CharacterList({ characters, onEdit, onDelete, onAdd }: CharacterListProps) {
+export default function CharacterList({ characters, factions, onEdit, onDelete, onAdd, onAddFaction }: CharacterListProps) {
   const [filterType, setFilterType] = useState<'All' | 'Player' | 'NPC' | 'Monster'>('All');
+  const [filterFaction, setFilterFaction] = useState('All');
   const [search, setSearch] = useState('');
 
   const filtered = characters.filter(c => {
     if (filterType !== 'All' && c.type !== filterType) return false;
+    if (filterFaction !== 'All' && c.faction !== filterFaction) return false;
     if (search && !c.name.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
@@ -25,20 +29,53 @@ export default function CharacterList({ characters, onEdit, onDelete, onAdd }: C
     <div className="space-y-8">
       {/* Toolbar */}
       <div className="flex flex-col md:flex-row justify-between gap-4 items-center bg-[var(--end-surface)] p-4 rounded-xl border border-[var(--end-border)]">
-        <div className="flex items-center gap-2 p-1 rounded-lg w-full md:w-auto overflow-x-auto">
-          {['All', 'Player', 'NPC', 'Monster'].map(type => (
-            <button
-              key={type}
-              onClick={() => setFilterType(type as any)}
-              className={`px-6 py-2 rounded-md text-xs font-bold transition-all uppercase tracking-wider ${
-                  filterType === type 
-                  ? 'bg-[var(--end-yellow)] text-black shadow-[0_0_15px_rgba(255,200,0,0.3)]' 
-                  : 'text-[var(--end-text-sub)] hover:bg-white/5 hover:text-[var(--end-text-main)]'
-              }`}
-            >
-              {type === 'All' ? '全部' : type === 'Player' ? '角色' : type === 'NPC' ? 'NPC' : '敌对'}
-            </button>
-          ))}
+        <div className="flex flex-col gap-2 w-full md:w-auto">
+            {/* Type Filter */}
+            <div className="flex items-center gap-2 p-1 rounded-lg w-full md:w-auto overflow-x-auto">
+            {['All', 'Player', 'NPC', 'Monster'].map(type => (
+                <button
+                key={type}
+                onClick={() => setFilterType(type as any)}
+                className={`px-6 py-2 rounded-md text-xs font-bold transition-all uppercase tracking-wider ${
+                    filterType === type 
+                    ? 'bg-[var(--end-yellow)] text-black shadow-[0_0_15px_rgba(255,200,0,0.3)]' 
+                    : 'text-[var(--end-text-sub)] hover:bg-white/5 hover:text-[var(--end-text-main)]'
+                }`}
+                >
+                {type === 'All' ? '全部' : type === 'Player' ? '角色' : type === 'NPC' ? 'NPC' : '敌对'}
+                </button>
+            ))}
+            </div>
+            
+            {/* Faction Filter */}
+            {factions.length > 0 && (
+                <div className="flex items-center gap-2 p-1 border-t border-[var(--end-border)] pt-2 mt-1 overflow-x-auto">
+                    <span className="text-[10px] font-bold text-[var(--end-text-dim)] uppercase tracking-widest mr-2">势力筛选:</span>
+                    <button
+                        onClick={() => setFilterFaction('All')}
+                        className={`px-3 py-1 text-[10px] font-bold transition-all uppercase tracking-wider border border-transparent ${
+                            filterFaction === 'All'
+                            ? 'text-[var(--end-yellow)] border-[var(--end-yellow)]'
+                            : 'text-[var(--end-text-sub)] hover:text-[var(--end-text-main)]'
+                        }`}
+                    >
+                        全部
+                    </button>
+                    {factions.map(faction => (
+                        <button
+                            key={faction.id}
+                            onClick={() => setFilterFaction(faction.name)}
+                            className={`px-3 py-1 text-[10px] font-bold transition-all uppercase tracking-wider border border-transparent ${
+                                filterFaction === faction.name
+                                ? 'text-[var(--end-yellow)] border-[var(--end-yellow)]'
+                                : 'text-[var(--end-text-sub)] hover:text-[var(--end-text-main)]'
+                            }`}
+                        >
+                            {faction.name}
+                        </button>
+                    ))}
+                </div>
+            )}
         </div>
 
         <div className="flex gap-4 w-full md:w-auto">
@@ -52,6 +89,12 @@ export default function CharacterList({ characters, onEdit, onDelete, onAdd }: C
               className="w-full pl-9 pr-4 py-2 bg-black/20 border border-[var(--end-border)] rounded-lg text-sm text-[var(--end-text-main)] focus:outline-none focus:border-[var(--end-yellow)] transition-colors font-mono placeholder:text-[var(--end-text-dim)]"
             />
           </div>
+          <button 
+            onClick={onAddFaction}
+            className="px-6 py-2 bg-[var(--end-surface-hover)] hover:bg-[var(--end-yellow)]/10 text-[var(--end-text-main)] hover:text-[var(--end-yellow)] font-bold rounded-lg text-xs uppercase tracking-wider flex items-center gap-2 border border-[var(--end-border)] hover:border-[var(--end-yellow)] transition-all"
+          >
+            <FontAwesomeIcon icon={faUsers} /> 新建势力
+          </button>
           <button 
             onClick={onAdd}
             className="px-6 py-2 bg-[var(--end-yellow)] hover:bg-[var(--end-yellow-dim)] text-black font-bold rounded-lg text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-[var(--end-yellow)]/20 transition-all hover:scale-105"
@@ -154,14 +197,20 @@ export default function CharacterList({ characters, onEdit, onDelete, onAdd }: C
                     <h3 className="text-2xl font-bold text-[var(--end-text-main)] mb-1 uppercase tracking-tighter leading-none group-hover:text-[var(--end-yellow)] transition-colors">{char.name}</h3>
                     
                     <div className="flex items-center justify-between mb-3">
-                        {char.region ? (
+                        <div className="flex gap-2">
+                        {char.faction && (
+                             <p className="text-[10px] text-[var(--end-text-sub)] font-mono uppercase tracking-widest flex items-center gap-2 border border-[var(--end-text-dim)] px-1">
+                                <span className="w-1 h-1 bg-[var(--end-text-dim)]"></span>
+                                {char.faction}
+                            </p>
+                        )}
+                        {char.region && (
                             <p className="text-[10px] text-[var(--end-text-sub)] font-mono uppercase tracking-widest flex items-center gap-2">
                                 <span className="w-1 h-1 bg-[var(--end-yellow)]"></span>
                                 {char.region}
                             </p>
-                        ) : (
-                            <div />
                         )}
+                        </div>
                     </div>
 
                     {/* Stats Grid */}
