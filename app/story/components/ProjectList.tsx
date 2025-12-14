@@ -15,7 +15,7 @@ export default function ProjectList({ onSelectProject }: ProjectListProps) {
     setIsLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/github/resources?type=projects");
+      const res = await fetch("http://localhost:8000/api/github/resources?type=projects");
       if (!res.ok) throw new Error("Failed to fetch projects");
       const data = await res.json();
       setProjects(data.projects || []);

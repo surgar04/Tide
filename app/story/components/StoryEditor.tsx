@@ -227,7 +227,7 @@ export default function StoryEditor({ filePath, projectId, onBack }: StoryEditor
              }
         } else {
             // Check if file exists by fetching it
-            const res = await fetch(`/api/github/file?path=${encodeURIComponent(filePath)}`);
+            const res = await fetch(`http://localhost:8000/api/github/file?path=${encodeURIComponent(filePath)}`);
             if (res.ok) {
               const blob = await res.blob();
               const text = await blob.text();
@@ -314,7 +314,7 @@ export default function StoryEditor({ filePath, projectId, onBack }: StoryEditor
 
       const message = `Update story: ${filePath.split('/').pop()}`;
 
-      const res = await fetch("/api/github/upload", {
+      const res = await fetch("http://localhost:8000/api/github/upload", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -422,7 +422,7 @@ export default function StoryEditor({ filePath, projectId, onBack }: StoryEditor
             const base64Content = btoa(unescape(encodeURIComponent(file.content)));
             const message = `Upload story (${uploadType}): ${uploadFileName}`;
             
-            await fetch("/api/github/upload", {
+            await fetch("http://localhost:8000/api/github/upload", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

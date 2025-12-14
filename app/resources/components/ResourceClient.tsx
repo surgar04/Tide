@@ -61,7 +61,7 @@ function ResourceContent() {
             setLoading(true);
             try {
                 // Fetch Metadata
-                const metaRes = await fetch(`/api/github/file/details?path=${encodeURIComponent(path)}`);
+                const metaRes = await fetch(`http://localhost:8000/api/github/file/details?path=${encodeURIComponent(path)}`);
                 if (metaRes.ok) {
                     const data = await metaRes.json();
                     setMetadata(data.metadata);
@@ -78,7 +78,7 @@ function ResourceContent() {
                 setFileType(type);
 
                 // Fetch Content
-                const contentRes = await fetch(`/api/github/file?path=${encodeURIComponent(path)}`);
+                const contentRes = await fetch(`http://localhost:8000/api/github/file?path=${encodeURIComponent(path)}`);
                 if (contentRes.ok) {
                     const blob = await contentRes.blob();
                     const url = URL.createObjectURL(blob);

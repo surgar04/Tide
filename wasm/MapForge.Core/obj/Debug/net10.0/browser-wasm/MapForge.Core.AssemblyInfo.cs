@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MapForge.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a47c1072145d7acd4ec86db62859eedf0628fecd")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+319ae624f0d6b5e93c08911b09d05fe6fdbca736")]
 [assembly: System.Reflection.AssemblyProductAttribute("MapForge.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MapForge.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

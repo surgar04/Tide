@@ -223,11 +223,10 @@ function AboutSettings() {
   useEffect(() => {
     // Initial version fetch
     // Use userClient or conditional logic if this API is critical.
-    // For system updates, it might be better to disable in Tauri or implement a Tauri-specific updater.
-    // For now, let's keep it but wrap in try-catch to avoid breaking the page if API fails in static mode.
+    // For system updates, we wrap in try-catch to avoid breaking the page if API fails.
     const checkVersion = async () => {
         try {
-            const res = await fetch("/api/system/update/check");
+            const res = await fetch("http://localhost:8000/api/system/update/check");
             if (res.ok) {
                 const data = await res.json();
                 setSystemInfo({ version: data.currentVersion, nextVersion: "16.0.8" });
@@ -235,8 +234,8 @@ function AboutSettings() {
                 setSystemInfo({ version: "1.0.0", nextVersion: "16.0.8" });
             }
         } catch (err) {
-            console.warn("System version check failed (likely static mode)", err);
-            setSystemInfo({ version: "1.0.0 (Static)", nextVersion: "16.0.8" });
+            console.warn("System version check failed", err);
+            setSystemInfo({ version: "1.0.0", nextVersion: "16.0.8" });
         }
     };
     checkVersion();
@@ -245,8 +244,8 @@ function AboutSettings() {
   const checkForUpdates = async () => {
     setUpdateStatus('checking');
     try {
-      // In static/Tauri mode, this API might not exist.
-      const res = await fetch("/api/system/update/check");
+      // Check if API is available.
+      const res = await fetch("http://localhost:8000/api/system/update/check");
       if (!res.ok) throw new Error("API unavailable");
       const data = await res.json();
       
@@ -260,8 +259,8 @@ function AboutSettings() {
         setTimeout(() => setUpdateMessage(""), 3000);
       }
     } catch (error) {
-      setUpdateStatus('idle'); // Just reset to idle instead of error to be less alarming in static mode
-      setUpdateMessage("Update check unavailable in this mode.");
+      setUpdateStatus('idle'); // Just reset to idle instead of error
+      setUpdateMessage("Update check unavailable.");
       setTimeout(() => setUpdateMessage(""), 3000);
     }
   };
@@ -269,7 +268,7 @@ function AboutSettings() {
   const performUpdate = async () => {
     setUpdateStatus('updating');
     try {
-      const res = await fetch("/api/system/update/perform", { method: 'POST' });
+      const res = await fetch("http://localhost:8000/api/system/update/perform", { method: 'POST' });
       if (!res.ok) throw new Error("API unavailable");
       const data = await res.json();
       

@@ -31,7 +31,7 @@ export default function StoryFileList({ projectId, onSelectFile, onBack }: Story
     setError(null);
     try {
       // Fetch all resources and filter for this project
-      const res = await fetch("/api/github/resources");
+      const res = await fetch("http://localhost:8000/api/github/resources");
       if (!res.ok) throw new Error("Failed to fetch resources");
       const data = await res.json();
       

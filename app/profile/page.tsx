@@ -37,12 +37,12 @@ export default function ProfilePage() {
       .catch(console.error);
     
     // ... stats fetching ...
-    fetch("/api/github/resources?type=all")
+    fetch("http://localhost:8000/api/github/resources?type=all")
       .then(res => res.json())
       .then(data => {
         if (data.resources) {
            setUploadCount(data.resources.length);
-           fetch("/api/github/resources?type=projects")
+           fetch("http://localhost:8000/api/github/resources?type=projects")
              .then(res2 => res2.json())
              .then(data2 => {
                 if (data2.projects) setProjectCount(data2.projects.length);

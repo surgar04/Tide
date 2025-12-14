@@ -17,11 +17,11 @@ export function AchievementWatcher() {
         // Fetch stats needed for achievement calculation
         const fetchStats = async () => {
             try {
-                const res = await fetch("/api/github/resources?type=all");
+                const res = await fetch("http://localhost:8000/api/github/resources?type=all");
                 const data = await res.json();
                 const uploads = data.resources?.length || 0;
 
-                const res2 = await fetch("/api/github/resources?type=projects");
+                const res2 = await fetch("http://localhost:8000/api/github/resources?type=projects");
                 const data2 = await res2.json();
                 const projects = data2.projects?.length || 0;
 

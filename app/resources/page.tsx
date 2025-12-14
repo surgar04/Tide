@@ -165,11 +165,13 @@ export default function ResourcesPage() {
   const [uploaderName, setUploaderName] = useState("");
   const [isUploading, setIsUploading] = useState(false);
 
+const API_BASE_URL = "http://localhost:8000/api";
+
   // --- Data Fetching ---
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const projectsRes = await fetch("/api/github/resources?type=projects");
+      const projectsRes = await fetch(`${API_BASE_URL}/github/resources?type=projects`);
       const projectsData = await projectsRes.json();
       if (projectsData.projects) {
         setProjects(projectsData.projects);
@@ -178,8 +180,9 @@ export default function ResourcesPage() {
         }
       }
 
-      const resourcesRes = await fetch("/api/github/resources");
-      const resourcesData = await resourcesRes.json();
+      let resourcesData;
+      const resourcesRes = await fetch(`${API_BASE_URL}/github/resources`);
+      resourcesData = await resourcesRes.json();
       
       if (resourcesData.resources) {
         const mappedResources: Resource[] = resourcesData.resources.map((item: any) => {
@@ -217,7 +220,7 @@ export default function ResourcesPage() {
         setResources(mappedResources);
       }
 
-      const healthRes = await fetch("/api/github/health");
+      const healthRes = await fetch(`${API_BASE_URL}/github/health`);
       const healthData = await healthRes.json();
       setHealth(healthData);
 
@@ -284,7 +287,7 @@ export default function ResourcesPage() {
         
         const path = `${uploadProject}/${newFileName}`;
 
-        const res = await fetch("/api/github/upload", {
+        const res = await fetch(`${API_BASE_URL}/github/upload`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -499,7 +502,7 @@ export default function ResourcesPage() {
 
                 {res.type === 'image' ? (
                     <img 
-                        src={`/api/github/file?path=${encodeURIComponent(res.rawPath)}`} 
+                        src={`${API_BASE_URL}/github/file?path=${encodeURIComponent(res.rawPath)}`} 
                         alt={res.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 filter grayscale-[20%] group-hover:grayscale-0"
                         loading="lazy"

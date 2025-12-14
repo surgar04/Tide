@@ -81,7 +81,7 @@ export default function LoginPage() {
       // Simulate network delay for effect
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Update data via client abstraction (handles Tauri or API)
+      // Update data via client abstraction
       await userClient.saveUserData({
           username,
           email,
@@ -93,11 +93,9 @@ export default function LoginPage() {
 
       // Log login info to GitHub
       try {
-        // This remains an API call as it's likely an external service integration
-        // For Tauri, if this API route doesn't work (static export), we should consider
-        // moving this logic to client side fetch to GitHub directly or skip it.
-        // For now, we wrap it in try-catch so it doesn't block login.
-        await fetch('/api/login-log', {
+        // This remains an API call as it's likely an external service integration.
+        // We wrap it in try-catch so it doesn't block login.
+        await fetch('http://localhost:8000/api/user/login-log', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
