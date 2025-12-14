@@ -11,22 +11,7 @@ import { useAuth } from "@/lib/auth/context";
 import { calculateLevel, getLevelProgress } from "@/lib/levelUtils";
 import { AchievementsSection } from "./components/AchievementsSection";
 import { ShareCardModal } from "@/components/ui/ShareCardModal";
-
-interface Activity {
-  id: string;
-  action: string;
-  target: string;
-  timestamp: string;
-}
-
-interface UserData {
-  username?: string;
-  email?: string;
-  joinDate: string | null;
-  totalTime: number;
-  avatar: string | null;
-  signature?: string;
-}
+import { userClient, UserData, Activity } from "@/lib/data/userClient";
 
 export default function ProfilePage() {
   const { user, updateProfile } = useAuth();
@@ -43,37 +28,27 @@ export default function ProfilePage() {
 
   useEffect(() => {
     // Fetch User Data
-    fetch("/api/user")
-      .then(res => res.json())
+    userClient.getUserData()
       .then(data => {
         setUserData(data);
         setSignatureInput(data.signature || "");
-        // Sync API data with Auth Context if Auth Context is missing something or vice versa?
-        // Actually, let's prioritize the API data for display if available, but AuthContext is for session.
-        // If they differ significantly, we might want to sync them. 
-        // For now, let's just use API data for the page content.
+        setActivities(data.activities || []);
       })
-      .catch(console.error);
-
-    // Fetch Activities
-    fetch("/api/activity")
-      .then(res => res.json())
-      .then(data => setActivities(data.activities))
       .catch(console.error);
     
     // ... stats fetching ...
     fetch("/api/github/resources?type=all")
       .then(res => res.json())
       .then(data => {
-         if (data.resources) {
-            setUploadCount(data.resources.length);
-            fetch("/api/github/resources?type=projects")
-              .then(res2 => res2.json())
-              .then(data2 => {
-                 if (data2.projects) setProjectCount(data2.projects.length);
-              })
-              .catch(() => setProjectCount(0));
-         }
+        if (data.resources) {
+           setUploadCount(data.resources.length);
+           fetch("/api/github/resources?type=projects")
+             .then(res2 => res2.json())
+             .then(data2 => {
+                if (data2.projects) setProjectCount(data2.projects.length);
+             })
+             .catch(() => setProjectCount(0));
+        }
       })
       .catch(console.error);
   }, []);
@@ -91,12 +66,8 @@ export default function ProfilePage() {
         // Update Auth Context (Session/LocalStorage)
         updateProfile({ avatar: base64 });
         
-        // Update Server/API
-        fetch("/api/user", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ type: "update_avatar", avatar: base64 }),
-        });
+        // Update Server/Data
+        userClient.updateAvatar(base64).catch(console.error);
       };
       reader.readAsDataURL(file);
     }
@@ -147,11 +118,7 @@ export default function ProfilePage() {
 
   const saveSignature = async () => {
       try {
-          await fetch("/api/user", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ type: "update_signature", signature: signatureInput }),
-          });
+          await userClient.updateSignature(signatureInput);
           handleUpdateSignature(signatureInput);
           setIsEditingSignature(false);
       } catch (error) {
@@ -257,7 +224,7 @@ export default function ProfilePage() {
                       className="mt-2 text-xs text-[var(--end-yellow)] hover:text-white border border-[var(--end-yellow)]/30 hover:border-[var(--end-yellow)] px-4 py-1.5 rounded-full transition-all flex items-center gap-2"
                   >
                       <FontAwesomeIcon icon={faShareNodes} />
-                      SHARE CARD
+                      分 享
                   </button>
 
                   {/* Level Progress */}

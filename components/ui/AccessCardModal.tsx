@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShieldHalved, faFingerprint, faIdCard, faTimes, faMicrochip } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import { calculateLevel } from "@/lib/levelUtils";
+import { userClient } from "@/lib/data/userClient";
 
 interface User {
   username: string;
@@ -22,8 +23,7 @@ export function AccessCardModal({ isOpen, onClose, user }: AccessCardModalProps)
   useEffect(() => {
     if (isOpen) {
       // Fetch latest user data to get totalTime for level calculation
-      fetch("/api/user")
-        .then(res => res.json())
+      userClient.getUserData()
         .then(data => {
            if (data && typeof data.totalTime === 'number') {
                setLevel(calculateLevel(data.totalTime));

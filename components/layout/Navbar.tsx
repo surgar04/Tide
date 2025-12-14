@@ -25,6 +25,7 @@ import { AccessCardModal } from "@/components/ui/AccessCardModal";
 import { useState, useEffect } from "react";
 import { calculateLevel } from "@/lib/levelUtils";
 import { AchievementWatcher } from "@/components/AchievementWatcher";
+import { userClient } from "@/lib/data/userClient";
 
 const navItems = [
   { name: "首页", href: "/", icon: faHouse, label: "HOME" },
@@ -52,8 +53,7 @@ export function Navbar() {
   useEffect(() => {
     if (user) {
         const fetchLevel = () => {
-            fetch("/api/user")
-                .then(res => res.json())
+            userClient.getUserData()
                 .then(data => {
                     if (data && typeof data.totalTime === 'number') {
                         setLevel(calculateLevel(data.totalTime));
@@ -137,7 +137,7 @@ export function Navbar() {
         </div>
 
         {/* Right Nav */}
-        <div className="flex items-center border-l border-[var(--end-border)] bg-[var(--end-surface-hover)] px-2">
+        <div className="flex items-center border-l border-[var(--end-border)] bg-[var(--end-surface-hover)] px-2 ml-auto">
             {user && (
                 <motion.div 
                     className="flex items-center gap-3 px-4 py-1 border-r border-[var(--end-border)]/50 mr-2 cursor-pointer relative group overflow-hidden"

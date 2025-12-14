@@ -2,9 +2,10 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faShareNodes, faQrcode, faFingerprint, faMicrochip, faShieldHalved, faPen, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faShareNodes, faQrcode, faFingerprint, faMicrochip, faShieldHalved, faPen, faCheck, faFileLines, faDatabase } from "@fortawesome/free-solid-svg-icons";
 import { calculateLevel } from "@/lib/levelUtils";
 import { useRef, useState, useEffect } from "react";
+import { userClient } from "@/lib/data/userClient";
 
 interface ShareCardModalProps {
     isOpen: boolean;
@@ -28,21 +29,12 @@ export function ShareCardModal({ isOpen, onClose, userData, stats, onUpdateSigna
 
     const handleSaveSignature = async () => {
         try {
-            const res = await fetch("/api/user", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    type: "update_signature",
-                    signature: tempSignature
-                })
-            });
-
-            if (res.ok) {
-                if (onUpdateSignature) {
-                    onUpdateSignature(tempSignature);
-                }
-                setIsEditing(false);
+            await userClient.updateSignature(tempSignature);
+            
+            if (onUpdateSignature) {
+                onUpdateSignature(tempSignature);
             }
+            setIsEditing(false);
         } catch (error) {
             console.error("Failed to update signature", error);
         }
@@ -72,144 +64,166 @@ export function ShareCardModal({ isOpen, onClose, userData, stats, onUpdateSigna
                         exit={{ scale: 0.9, opacity: 0, y: 20 }}
                         className="relative z-10 max-w-md w-full"
                     >
-                        {/* The Share Card */}
+                        {/* The Share Card - Redesigned to match Identity Card style */}
                         <div 
                             ref={cardRef}
-                            className="bg-[#1a1a1a] border-2 border-[var(--end-yellow)] relative overflow-hidden text-white"
+                            className="w-full bg-[var(--end-surface)] border border-[var(--end-border)] relative overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] flex flex-col"
                             style={{ aspectRatio: "3/5" }}
                         >
-                            {/* Background Texture */}
-                            <div className="absolute inset-0 opacity-10" 
-                                style={{ 
-                                    backgroundImage: "radial-gradient(#fff 1px, transparent 1px)", 
-                                    backgroundSize: "20px 20px" 
-                                }} 
-                            />
+                            {/* Decorative Elements */}
+                            <div className="absolute top-0 left-0 w-full h-2 bg-[var(--end-yellow)]" />
+                            <div className="absolute top-2 right-2 flex gap-1">
+                                <div className="w-12 h-1 bg-[var(--end-text-dim)]" />
+                                <div className="w-4 h-1 bg-[var(--end-yellow)]" />
+                            </div>
                             
-                            {/* Top Band */}
-                            <div className="h-24 bg-[var(--end-yellow)] relative overflow-hidden">
-                                <div className="absolute inset-0 opacity-20 bg-[repeating-linear-gradient(45deg,#000_0,#000_10px,transparent_10px,transparent_20px)]" />
-                                <div className="absolute bottom-2 right-4 text-black font-bold text-4xl tracking-tighter opacity-50">
-                                    TIDE OA
+                            <div className="absolute bottom-0 right-0 w-48 h-48 bg-[var(--end-yellow)]/5 rounded-tl-full pointer-events-none" />
+                            <div className="absolute bottom-20 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[var(--end-border)] to-transparent" />
+
+                            {/* Header */}
+                            <div className="p-8 pb-4 relative z-10">
+                                <div className="flex items-center gap-2 text-[var(--end-yellow)] mb-2">
+                                    <FontAwesomeIcon icon={faFileLines} />
+                                    <span className="text-xs font-bold tracking-widest">PERSONNEL DOSSIER</span>
+                                </div>
+                                <h2 className="text-3xl font-bold text-[var(--end-text-main)] uppercase tracking-tighter">
+                                    档案记录
+                                </h2>
+                                <p className="text-[var(--end-text-dim)] font-mono text-[10px] tracking-widest">
+                                    OPERATOR DATA LOG
+                                </p>
+                            </div>
+
+                            {/* Content Grid */}
+                            <div className="px-8 flex-1 flex flex-col gap-6 relative z-10">
+                                
+                                {/* User Basic Info & Avatar */}
+                                <div className="flex gap-4 items-start">
+                                    <div className="w-20 h-20 rounded border border-[var(--end-yellow)] p-0.5 relative shrink-0">
+                                        <div className="w-full h-full overflow-hidden bg-black relative">
+                                            <img 
+                                                src={userData.avatar} 
+                                                className="w-full h-full object-cover grayscale contrast-125" 
+                                                alt="Avatar"
+                                            />
+                                            {/* Scanner Overlay */}
+                                            <div className="absolute inset-0 bg-[linear-gradient(transparent_0%,rgba(255,199,0,0.2)_50%,transparent_100%)] bg-[length:100%_200%] animate-[scan_3s_linear_infinite] pointer-events-none" />
+                                        </div>
+                                        {/* Corner Markers */}
+                                        <div className="absolute -top-px -left-px w-2 h-2 border-t border-l border-[var(--end-yellow)]" />
+                                        <div className="absolute -bottom-px -right-px w-2 h-2 border-b border-r border-[var(--end-yellow)]" />
+                                    </div>
+                                    
+                                    <div className="flex-1 space-y-1 pt-1">
+                                        <div className="text-xl font-bold text-[var(--end-text-main)] uppercase tracking-tight leading-none">
+                                            {userData.username}
+                                        </div>
+                                        <div className="flex items-center gap-2 text-[var(--end-yellow)] text-xs font-mono">
+                                            <FontAwesomeIcon icon={faShieldHalved} />
+                                            <span>LEVEL {level}</span>
+                                        </div>
+                                        <div className="text-[9px] text-[var(--end-text-dim)] font-mono break-all leading-tight">
+                                            ID: {userData.email?.split('@')[0].toUpperCase() || 'UNKNOWN'}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Signature Section */}
+                                <div className="border-t border-b border-[var(--end-border)] py-4 relative group">
+                                    <label className="text-[9px] text-[var(--end-text-dim)] uppercase font-mono tracking-widest block mb-2">
+                                        Personal Note
+                                    </label>
+                                    
+                                    {isEditing ? (
+                                        <div className="flex gap-2 items-center bg-black/20 p-2 rounded border border-[var(--end-yellow)]/30">
+                                            <input 
+                                                type="text" 
+                                                value={tempSignature}
+                                                onChange={(e) => setTempSignature(e.target.value)}
+                                                className="w-full bg-transparent text-white font-mono text-xs focus:outline-none"
+                                                autoFocus
+                                                placeholder="Enter signature..."
+                                                maxLength={50}
+                                            />
+                                            <button 
+                                                onClick={handleSaveSignature}
+                                                className="text-[var(--end-yellow)] hover:text-white transition-colors p-1"
+                                                title="Save"
+                                            >
+                                                <FontAwesomeIcon icon={faCheck} />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="relative pl-3 border-l-2 border-[var(--end-yellow)]">
+                                            <p className="text-sm font-mono text-[var(--end-text-main)] italic leading-relaxed pr-6 break-words opacity-90">
+                                                "{userData.signature || "System User"}"
+                                            </p>
+                                            <button 
+                                                onClick={() => setIsEditing(true)}
+                                                className="absolute top-0 right-0 text-[var(--end-text-dim)] opacity-0 group-hover:opacity-100 hover:text-[var(--end-yellow)] transition-all duration-200"
+                                                title="Edit Signature"
+                                            >
+                                                <FontAwesomeIcon icon={faPen} className="text-xs" />
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Stats Grid */}
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-6">
+                                    <div className="space-y-1">
+                                        <label className="text-[9px] text-[var(--end-text-dim)] uppercase font-mono tracking-widest block">Service Time</label>
+                                        <div className="text-sm font-bold text-[var(--end-text-main)] font-mono">
+                                            {Math.floor(userData.totalTime / 3600)}H {Math.floor((userData.totalTime % 3600) / 60)}M
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[9px] text-[var(--end-text-dim)] uppercase font-mono tracking-widest block">Join Date</label>
+                                        <div className="text-sm font-bold text-[var(--end-text-main)] font-mono">
+                                            {new Date(userData.joinDate).toLocaleDateString()}
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[9px] text-[var(--end-text-dim)] uppercase font-mono tracking-widest block">Contributions</label>
+                                        <div className="text-sm font-bold text-[var(--end-text-main)] font-mono flex items-center gap-2">
+                                            <FontAwesomeIcon icon={faDatabase} className="text-[var(--end-text-dim)] text-[10px]" />
+                                            {stats.uploads} UPLOADS
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[9px] text-[var(--end-text-dim)] uppercase font-mono tracking-widest block">Projects</label>
+                                        <div className="text-sm font-bold text-[var(--end-text-main)] font-mono flex items-center gap-2">
+                                            <FontAwesomeIcon icon={faMicrochip} className="text-[var(--end-text-dim)] text-[10px]" />
+                                            {stats.projects} MANAGED
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* Content */}
-                            <div className="p-8 relative">
-                                {/* Avatar */}
-                                <div className="absolute -top-16 left-8 w-24 h-24 bg-[#1a1a1a] p-1 border-2 border-[var(--end-yellow)] rounded-lg">
-                                    <img 
-                                        src={userData.avatar} 
-                                        className="w-full h-full object-cover grayscale contrast-125" 
-                                        alt="Avatar"
-                                    />
-                                </div>
-
-                                <div className="mt-10 space-y-6">
-                                    {/* Header Info */}
-                                    <div>
-                                        <h2 className="text-3xl font-bold uppercase tracking-wide text-white mb-1">
-                                            {userData.username}
-                                        </h2>
-                                        <div className="flex items-center gap-2 text-[var(--end-yellow)] text-xs font-mono">
-                                            <FontAwesomeIcon icon={faShieldHalved} />
-                                            <span>LEVEL {level} OPERATOR</span>
-                                            <span className="w-px h-3 bg-[var(--end-yellow)]/50 mx-1" />
-                                            <span>ID: {userData.email?.split('@')[0].toUpperCase() || 'UNKNOWN'}</span>
+                            {/* Footer */}
+                            <div className="mt-auto p-6 flex justify-between items-end relative z-10">
+                                <div>
+                                    <div className="flex items-center gap-2 text-[var(--end-text-dim)] mb-1">
+                                        <FontAwesomeIcon icon={faFingerprint} className="text-xl opacity-50" />
+                                        <div className="text-[9px] font-mono leading-none">
+                                            DATA VERIFIED<br/>ENCRYPTED
                                         </div>
                                     </div>
-
-                                    {/* Signature Box */}
-                                    <div className="border border-[var(--end-text-dim)]/30 bg-white/5 p-4 relative group">
-                                        <FontAwesomeIcon icon={faMicrochip} className="absolute top-2 right-2 text-[var(--end-text-dim)] opacity-20 text-2xl" />
-                                        
-                                        {isEditing ? (
-                                            <div className="flex gap-2 items-center">
-                                                <input 
-                                                    type="text" 
-                                                    value={tempSignature}
-                                                    onChange={(e) => setTempSignature(e.target.value)}
-                                                    className="w-full bg-black/50 border-b border-[var(--end-yellow)] text-white font-mono text-sm focus:outline-none px-1 py-1"
-                                                    autoFocus
-                                                    placeholder="Enter your signature..."
-                                                    maxLength={50}
-                                                />
-                                                <button 
-                                                    onClick={handleSaveSignature}
-                                                    className="text-[var(--end-yellow)] hover:text-white transition-colors p-1"
-                                                    title="Save"
-                                                >
-                                                    <FontAwesomeIcon icon={faCheck} />
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <>
-                                                <p className="text-sm font-mono text-[var(--end-text-dim)] italic leading-relaxed pr-6 break-words">
-                                                    "{userData.signature || "System User"}"
-                                                </p>
-                                                <button 
-                                                    onClick={() => setIsEditing(true)}
-                                                    className="absolute bottom-2 right-2 text-[var(--end-text-dim)] opacity-0 group-hover:opacity-100 hover:text-[var(--end-yellow)] transition-all duration-200"
-                                                    title="Edit Signature"
-                                                >
-                                                    <FontAwesomeIcon icon={faPen} className="text-xs" />
-                                                </button>
-                                            </>
-                                        )}
-                                    </div>
-
-                                    {/* Stats Grid */}
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-1">
-                                            <div className="text-[10px] text-[var(--end-text-dim)] uppercase tracking-wider">Join Date</div>
-                                            <div className="font-mono text-sm">
-                                                {new Date(userData.joinDate).toLocaleDateString()}
-                                            </div>
-                                        </div>
-                                        <div className="space-y-1">
-                                            <div className="text-[10px] text-[var(--end-text-dim)] uppercase tracking-wider">Online Time</div>
-                                            <div className="font-mono text-sm">
-                                                {Math.floor(userData.totalTime / 3600)}H {Math.floor((userData.totalTime % 3600) / 60)}M
-                                            </div>
-                                        </div>
-                                        <div className="space-y-1">
-                                            <div className="text-[10px] text-[var(--end-text-dim)] uppercase tracking-wider">Contribution</div>
-                                            <div className="font-mono text-sm">
-                                                {stats.uploads} Resources
-                                            </div>
-                                        </div>
-                                        <div className="space-y-1">
-                                            <div className="text-[10px] text-[var(--end-text-dim)] uppercase tracking-wider">Projects</div>
-                                            <div className="font-mono text-sm">
-                                                {stats.projects} Managed
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Footer / QR */}
-                                    <div className="pt-6 border-t border-[var(--end-text-dim)]/20 flex justify-between items-end">
-                                        <div>
-                                            <div className="text-[var(--end-yellow)] font-bold text-lg tracking-tighter">END-FIELD</div>
-                                            <div className="text-[9px] text-[var(--end-text-dim)] uppercase">Authorized Personnel Only</div>
-                                        </div>
-                                        <div className="w-16 h-16 bg-white p-1">
-                                            <div className="w-full h-full border border-black flex items-center justify-center">
-                                                <FontAwesomeIcon icon={faQrcode} className="text-3xl text-black" />
-                                            </div>
-                                        </div>
+                                    <div className="text-[var(--end-yellow)] font-bold text-lg tracking-tighter">
+                                        TIDE OA
                                     </div>
                                 </div>
                                 
-                                {/* Decorative Fingerprint */}
-                                <FontAwesomeIcon 
-                                    icon={faFingerprint} 
-                                    className="absolute bottom-4 left-1/2 -translate-x-1/2 text-[100px] text-[var(--end-yellow)] opacity-5 pointer-events-none" 
-                                />
+                                <div className="w-14 h-14 bg-white p-1">
+                                    <div className="w-full h-full border border-black flex items-center justify-center">
+                                        <FontAwesomeIcon icon={faQrcode} className="text-2xl text-black" />
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         {/* Actions */}
-                        <div className="mt-4 flex justify-center gap-4">
+                        <div className="mt-6 flex justify-center gap-4">
                             <button 
                                 onClick={handleCopy}
                                 className="px-6 py-2 bg-[var(--end-yellow)] text-black font-bold rounded hover:bg-white transition-colors flex items-center gap-2"

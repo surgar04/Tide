@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faLock, faUser, faUpload, faImage, faArrowRight, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '@/lib/auth/context';
+import { userClient } from '@/lib/data/userClient';
 
 const compressImage = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -80,20 +81,22 @@ export default function LoginPage() {
       // Simulate network delay for effect
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Update server-side profile data
-      await fetch('/api/user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'update_profile',
+      // Update data via client abstraction (handles Tauri or API)
+      await userClient.saveUserData({
           username,
           email,
-          avatar
-        })
+          avatar,
+          totalTime: 0,
+          joinDate: null, // Will be handled by backend/service if null
+          activities: []
       });
 
       // Log login info to GitHub
       try {
+        // This remains an API call as it's likely an external service integration
+        // For Tauri, if this API route doesn't work (static export), we should consider
+        // moving this logic to client side fetch to GitHub directly or skip it.
+        // For now, we wrap it in try-catch so it doesn't block login.
         await fetch('/api/login-log', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -106,7 +109,7 @@ export default function LoginPage() {
             })
         });
       } catch (e) {
-        console.error("Logging failed", e);
+        console.warn("Remote logging failed or skipped", e);
       }
 
       await login({

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth/context";
 import { ACHIEVEMENTS, Achievement } from "@/lib/achievements";
 import { AchievementToast } from "@/components/ui/AchievementToast";
+import { userClient } from "@/lib/data/userClient";
 
 export function AchievementWatcher() {
     const { user } = useAuth();
@@ -40,8 +41,7 @@ export function AchievementWatcher() {
             // Get latest user data
             let userData;
             try {
-                const res = await fetch("/api/user");
-                userData = await res.json();
+                userData = await userClient.getUserData();
             } catch (e) {
                 return;
             }

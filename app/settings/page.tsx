@@ -222,21 +222,32 @@ function AboutSettings() {
 
   useEffect(() => {
     // Initial version fetch
-    fetch("/api/system/update/check")
-      .then(res => res.json())
-      .then(data => {
-        setSystemInfo({ version: data.currentVersion, nextVersion: "16.0.8" });
-      })
-      .catch(err => {
-        console.error(err);
-        setSystemInfo({ version: "Unknown", nextVersion: "16.0.8" });
-      });
+    // Use userClient or conditional logic if this API is critical.
+    // For system updates, it might be better to disable in Tauri or implement a Tauri-specific updater.
+    // For now, let's keep it but wrap in try-catch to avoid breaking the page if API fails in static mode.
+    const checkVersion = async () => {
+        try {
+            const res = await fetch("/api/system/update/check");
+            if (res.ok) {
+                const data = await res.json();
+                setSystemInfo({ version: data.currentVersion, nextVersion: "16.0.8" });
+            } else {
+                setSystemInfo({ version: "1.0.0", nextVersion: "16.0.8" });
+            }
+        } catch (err) {
+            console.warn("System version check failed (likely static mode)", err);
+            setSystemInfo({ version: "1.0.0 (Static)", nextVersion: "16.0.8" });
+        }
+    };
+    checkVersion();
   }, []);
 
   const checkForUpdates = async () => {
     setUpdateStatus('checking');
     try {
+      // In static/Tauri mode, this API might not exist.
       const res = await fetch("/api/system/update/check");
+      if (!res.ok) throw new Error("API unavailable");
       const data = await res.json();
       
       if (data.hasUpdate) {
@@ -249,8 +260,9 @@ function AboutSettings() {
         setTimeout(() => setUpdateMessage(""), 3000);
       }
     } catch (error) {
-      setUpdateStatus('error');
-      setUpdateMessage("Failed to check for updates.");
+      setUpdateStatus('idle'); // Just reset to idle instead of error to be less alarming in static mode
+      setUpdateMessage("Update check unavailable in this mode.");
+      setTimeout(() => setUpdateMessage(""), 3000);
     }
   };
 
@@ -258,6 +270,7 @@ function AboutSettings() {
     setUpdateStatus('updating');
     try {
       const res = await fetch("/api/system/update/perform", { method: 'POST' });
+      if (!res.ok) throw new Error("API unavailable");
       const data = await res.json();
       
       if (data.success) {
